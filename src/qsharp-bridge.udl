@@ -1,0 +1,35 @@
+namespace qsharp_bridge {
+
+    [Throws=QsError]
+    ExecutionState run_qs([ByRef]string source);
+
+    [Throws=QsError]
+    sequence<ExecutionState> run_qs_shots([ByRef]string source, u32 shots);
+
+    [Throws=QsError]
+    string qir([ByRef]string expression);
+
+    [Throws=QsError]
+    string estimate([ByRef]string source, string? job_params);
+
+    [Throws=QsError]
+    string estimate_expression([ByRef]string expression, string? job_params);
+};
+
+[Error]
+interface QsError {
+    ErrorMessage(string error_text);
+};
+
+dictionary ExecutionState {
+    sequence<QubitState> states;
+    u64 qubit_count;
+    sequence<string> messages;
+    string? result;
+};
+
+dictionary QubitState {
+    string id;
+    f64 amplitude_real;
+    f64 amplitude_imaginary;
+};
