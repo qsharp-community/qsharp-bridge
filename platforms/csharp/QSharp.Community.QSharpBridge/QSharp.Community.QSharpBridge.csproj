@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Version>0.1.0</Version>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NativeOutputPath>../../../target/$(Configuration.ToLowerInvariant())/</NativeOutputPath>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Authors>filipw;qsharp-community</Authors>
+  </PropertyGroup>
+
+<ItemGroup>
+    <None Condition="$([MSBuild]::IsOsPlatform('MacOS'))" Include="$(NativeOutputPath)libqsharp_bridge.dylib" CopyToOutputDirectory="PreserveNewest" />
+    <None Condition="$([MSBuild]::IsOsPlatform('Linux'))" Include="$(NativeOutputPath)libqsharp_bridge.so" CopyToOutputDirectory="PreserveNewest" />
+    <None Condition="$([MSBuild]::IsOsPlatform('Windows'))" Include="$(NativeOutputPath)qsharp_bridge.dll" CopyToOutputDirectory="PreserveNewest" />
+</ItemGroup>
+
+<ItemGroup>
+  <Compile Include="..\..\..\bindings\qsharp_bridge.cs" Link="qsharp_bridge.cs" />
+</ItemGroup>
+</Project>
