@@ -7,7 +7,7 @@ use num_bigint::BigUint;
 use num_complex::Complex64;
 use qsc::interpret::output::Receiver;
 use qsc::interpret::output;
-use qsc::{SourceMap, PackageType, RuntimeCapabilityFlags};
+use qsc::{format_state_id, LanguageFeatures, PackageType, RuntimeCapabilityFlags, SourceMap};
 
 #[derive(Error, Debug)]
 pub enum QsError {
@@ -63,6 +63,7 @@ pub fn run_qs(source: &str) -> Result<ExecutionState, QsError> {
         source_map,
         PackageType::Exe,
         RuntimeCapabilityFlags::all(),
+        LanguageFeatures::default()
     ) {
         Ok(interpreter) => interpreter,
         Err(errors) => {
@@ -86,6 +87,7 @@ pub fn run_qs_shots(source: &str, shots: u32) -> Result<Vec<ExecutionState>, QsE
         source_map,
         PackageType::Exe,
         RuntimeCapabilityFlags::all(),
+        LanguageFeatures::default()
     ) {
         Ok(interpreter) => interpreter,
         Err(errors) => {
@@ -109,6 +111,7 @@ pub fn qir(expression: &str) -> Result<String, QsError> {
         SourceMap::default(),
         PackageType::Lib,
         RuntimeCapabilityFlags::empty(),
+        LanguageFeatures::default()
     ) {
         Ok(interpreter) => interpreter,
         Err(errors) => {
@@ -127,6 +130,7 @@ pub fn estimate(source: &str, job_params: Option<String>) -> Result<String, QsEr
         source_map,
         PackageType::Exe,
         RuntimeCapabilityFlags::empty(),
+        LanguageFeatures::default()
     ) {
         Ok(interpreter) => interpreter,
         Err(errors) => {
@@ -145,6 +149,7 @@ pub fn estimate_expression(expression: &str, job_params: Option<String>) -> Resu
         SourceMap::default(),
         PackageType::Lib,
         RuntimeCapabilityFlags::empty(),
+        LanguageFeatures::default()
     ) {
         Ok(interpreter) => interpreter,
         Err(errors) => {
@@ -197,7 +202,7 @@ impl Receiver for ExecutionState {
         self.qubit_count = qubit_count as u64;
         self.states = states.iter().map(|(qubit, amplitude)| {
             QubitState {
-                id: output::format_state_id(&qubit, qubit_count),
+                id: format_state_id(&qubit, qubit_count),
                 amplitude_real: amplitude.re,
                 amplitude_imaginary: amplitude.im,
             }
