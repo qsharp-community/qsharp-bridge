@@ -4,7 +4,10 @@ var qsharpSource = """
 namespace MyQuantumApp {
         @EntryPoint()
         operation Main() : Unit {
-            Message("Hello");
+            use q = Qubit();
+            H(q);
+            let result = MResetZ(q);
+            Message($"{result}");
         }
 }
 """;
