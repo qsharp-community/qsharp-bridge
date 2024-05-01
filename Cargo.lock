@@ -29,7 +29,7 @@ dependencies = [
 [[package]]
 name = "allocator"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qsharp.git?tag=v1.3.1#cfc3bc9c38fde57cc5a103f254c0ad483f1dcb31"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
 dependencies = [
  "mimalloc-sys",
 ]
@@ -269,15 +269,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "98cc8fbded0c607b7ba9dd60cd98df59af97e84d24e49c8557331cfc26d301ce"
 
 [[package]]
-name = "cmake"
-version = "0.1.50"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a31c789563b815f77f4250caee12365734369f942439b7defd71e18a48197130"
-dependencies = [
- "cc",
-]
-
-[[package]]
 name = "colorchoice"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -427,7 +418,7 @@ checksum = "4ec2a862134d2a7d32d7983ddcdd1c4923530833c9f2ea1a44fc5fa473989058"
 [[package]]
 name = "library"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qsharp.git?tag=v1.3.1#cfc3bc9c38fde57cc5a103f254c0ad483f1dcb31"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
 
 [[package]]
 name = "log"
@@ -486,10 +477,9 @@ dependencies = [
 [[package]]
 name = "mimalloc-sys"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qsharp.git?tag=v1.3.1#cfc3bc9c38fde57cc5a103f254c0ad483f1dcb31"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
 dependencies = [
  "cc",
- "cmake",
 ]
 
 [[package]]
@@ -645,7 +635,7 @@ dependencies = [
 [[package]]
 name = "qsc"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qsharp.git?tag=v1.3.1#cfc3bc9c38fde57cc5a103f254c0ad483f1dcb31"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
 dependencies = [
  "allocator",
  "clap",
@@ -655,6 +645,7 @@ dependencies = [
  "num-bigint",
  "num-complex",
  "qsc_ast",
+ "qsc_circuit",
  "qsc_codegen",
  "qsc_data_structures",
  "qsc_doc_gen",
@@ -664,8 +655,11 @@ dependencies = [
  "qsc_frontend",
  "qsc_hir",
  "qsc_linter",
+ "qsc_lowerer",
+ "qsc_partial_eval",
  "qsc_passes",
  "qsc_project",
+ "qsc_rca",
  "rustc-hash",
  "thiserror",
 ]
@@ -673,7 +667,7 @@ dependencies = [
 [[package]]
 name = "qsc_ast"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qsharp.git?tag=v1.3.1#cfc3bc9c38fde57cc5a103f254c0ad483f1dcb31"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
 dependencies = [
  "indenter",
  "miette",
@@ -682,24 +676,51 @@ dependencies = [
 ]
 
 [[package]]
-name = "qsc_codegen"
+name = "qsc_circuit"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qsharp.git?tag=v1.3.1#cfc3bc9c38fde57cc5a103f254c0ad483f1dcb31"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
 dependencies = [
+ "log",
+ "miette",
  "num-bigint",
  "num-complex",
+ "qsc_codegen",
  "qsc_data_structures",
  "qsc_eval",
  "qsc_fir",
  "qsc_frontend",
  "qsc_hir",
  "rustc-hash",
+ "serde",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
+name = "qsc_codegen"
+version = "0.0.0"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
+dependencies = [
+ "num-bigint",
+ "num-complex",
+ "qsc_ast",
+ "qsc_data_structures",
+ "qsc_eval",
+ "qsc_fir",
+ "qsc_formatter",
+ "qsc_frontend",
+ "qsc_hir",
+ "qsc_lowerer",
+ "qsc_partial_eval",
+ "qsc_rca",
+ "qsc_rir",
+ "rustc-hash",
 ]
 
 [[package]]
 name = "qsc_data_structures"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qsharp.git?tag=v1.3.1#cfc3bc9c38fde57cc5a103f254c0ad483f1dcb31"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
 dependencies = [
  "bitflags",
  "miette",
@@ -709,7 +730,7 @@ dependencies = [
 [[package]]
 name = "qsc_doc_gen"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qsharp.git?tag=v1.3.1#cfc3bc9c38fde57cc5a103f254c0ad483f1dcb31"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
 dependencies = [
  "qsc_ast",
  "qsc_frontend",
@@ -721,7 +742,7 @@ dependencies = [
 [[package]]
 name = "qsc_eval"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qsharp.git?tag=v1.3.1#cfc3bc9c38fde57cc5a103f254c0ad483f1dcb31"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
 dependencies = [
  "miette",
  "num-bigint",
@@ -730,6 +751,7 @@ dependencies = [
  "qsc_data_structures",
  "qsc_fir",
  "qsc_hir",
+ "qsc_lowerer",
  "quantum-sparse-sim",
  "rand",
  "rustc-hash",
@@ -739,7 +761,7 @@ dependencies = [
 [[package]]
 name = "qsc_fir"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qsharp.git?tag=v1.3.1#cfc3bc9c38fde57cc5a103f254c0ad483f1dcb31"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
 dependencies = [
  "indenter",
  "num-bigint",
@@ -750,8 +772,9 @@ dependencies = [
 [[package]]
 name = "qsc_formatter"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qsharp.git?tag=v1.3.1#cfc3bc9c38fde57cc5a103f254c0ad483f1dcb31"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
 dependencies = [
+ "clap",
  "qsc_data_structures",
  "qsc_frontend",
 ]
@@ -759,7 +782,7 @@ dependencies = [
 [[package]]
 name = "qsc_frontend"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qsharp.git?tag=v1.3.1#cfc3bc9c38fde57cc5a103f254c0ad483f1dcb31"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
 dependencies = [
  "bitflags",
  "library",
@@ -775,7 +798,7 @@ dependencies = [
 [[package]]
 name = "qsc_hir"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qsharp.git?tag=v1.3.1#cfc3bc9c38fde57cc5a103f254c0ad483f1dcb31"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
 dependencies = [
  "indenter",
  "num-bigint",
@@ -786,7 +809,7 @@ dependencies = [
 [[package]]
 name = "qsc_linter"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qsharp.git?tag=v1.3.1#cfc3bc9c38fde57cc5a103f254c0ad483f1dcb31"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
 dependencies = [
  "miette",
  "qsc_ast",
@@ -798,9 +821,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "qsc_lowerer"
+version = "0.0.0"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
+dependencies = [
+ "qsc_data_structures",
+ "qsc_fir",
+ "qsc_hir",
+]
+
+[[package]]
 name = "qsc_parse"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qsharp.git?tag=v1.3.1#cfc3bc9c38fde57cc5a103f254c0ad483f1dcb31"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
 dependencies = [
  "enum-iterator",
  "miette",
@@ -812,14 +845,36 @@ dependencies = [
 ]
 
 [[package]]
+name = "qsc_partial_eval"
+version = "0.0.0"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
+dependencies = [
+ "miette",
+ "num-bigint",
+ "num-complex",
+ "qsc_data_structures",
+ "qsc_eval",
+ "qsc_fir",
+ "qsc_lowerer",
+ "qsc_rca",
+ "qsc_rir",
+ "rustc-hash",
+ "thiserror",
+]
+
+[[package]]
 name = "qsc_passes"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qsharp.git?tag=v1.3.1#cfc3bc9c38fde57cc5a103f254c0ad483f1dcb31"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
 dependencies = [
  "miette",
  "qsc_data_structures",
+ "qsc_eval",
+ "qsc_fir",
  "qsc_frontend",
  "qsc_hir",
+ "qsc_lowerer",
+ "qsc_rca",
  "rustc-hash",
  "thiserror",
 ]
@@ -827,7 +882,7 @@ dependencies = [
 [[package]]
 name = "qsc_project"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qsharp.git?tag=v1.3.1#cfc3bc9c38fde57cc5a103f254c0ad483f1dcb31"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
 dependencies = [
  "miette",
  "qsc_linter",
@@ -835,6 +890,30 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror",
+]
+
+[[package]]
+name = "qsc_rca"
+version = "0.0.0"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
+dependencies = [
+ "bitflags",
+ "indenter",
+ "qsc_data_structures",
+ "qsc_fir",
+ "qsc_frontend",
+ "qsc_lowerer",
+ "rustc-hash",
+]
+
+[[package]]
+name = "qsc_rir"
+version = "0.0.0"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
+dependencies = [
+ "indenter",
+ "qsc_data_structures",
+ "rustc-hash",
 ]
 
 [[package]]
@@ -955,7 +1034,7 @@ checksum = "c08c74e62047bb2de4ff487b251e4a92e24f48745648451635cec7d591162d9f"
 [[package]]
 name = "resource_estimator"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qsharp.git?tag=v1.3.1#cfc3bc9c38fde57cc5a103f254c0ad483f1dcb31"
+source = "git+https://github.com/microsoft/qsharp.git?tag=v1.4.0#f9046ca8f1f0b6a7fbc2e6994a22f339bad221b1"
 dependencies = [
  "fasteval",
  "miette",

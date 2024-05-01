@@ -7,7 +7,7 @@ use num_bigint::BigUint;
 use num_complex::Complex64;
 use qsc::interpret::output::Receiver;
 use qsc::interpret::output;
-use qsc::{format_state_id, LanguageFeatures, PackageType, RuntimeCapabilityFlags, SourceMap};
+use qsc::{format_state_id, LanguageFeatures, PackageType, TargetCapabilityFlags, SourceMap};
 
 #[derive(Error, Debug)]
 pub enum QsError {
@@ -62,7 +62,7 @@ pub fn run_qs(source: &str) -> Result<ExecutionState, QsError> {
         true,
         source_map,
         PackageType::Exe,
-        RuntimeCapabilityFlags::all(),
+        TargetCapabilityFlags::all(),
         LanguageFeatures::default()
     ) {
         Ok(interpreter) => interpreter,
@@ -86,7 +86,7 @@ pub fn run_qs_shots(source: &str, shots: u32) -> Result<Vec<ExecutionState>, QsE
         true,
         source_map,
         PackageType::Exe,
-        RuntimeCapabilityFlags::all(),
+        TargetCapabilityFlags::all(),
         LanguageFeatures::default()
     ) {
         Ok(interpreter) => interpreter,
@@ -110,7 +110,7 @@ pub fn qir(expression: &str) -> Result<String, QsError> {
         true,
         SourceMap::default(),
         PackageType::Lib,
-        RuntimeCapabilityFlags::empty(),
+        TargetCapabilityFlags::empty(),
         LanguageFeatures::default()
     ) {
         Ok(interpreter) => interpreter,
@@ -129,7 +129,7 @@ pub fn estimate(source: &str, job_params: Option<String>) -> Result<String, QsEr
         true,
         source_map,
         PackageType::Exe,
-        RuntimeCapabilityFlags::empty(),
+        TargetCapabilityFlags::empty(),
         LanguageFeatures::default()
     ) {
         Ok(interpreter) => interpreter,
@@ -148,7 +148,7 @@ pub fn estimate_expression(expression: &str, job_params: Option<String>) -> Resu
         true,
         SourceMap::default(),
         PackageType::Lib,
-        RuntimeCapabilityFlags::empty(),
+        TargetCapabilityFlags::empty(),
         LanguageFeatures::default()
     ) {
         Ok(interpreter) => interpreter,
