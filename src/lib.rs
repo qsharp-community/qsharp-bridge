@@ -39,9 +39,8 @@ impl From<Vec<resource_estimator::Error>> for QsError {
             match error {
                 resource_estimator::Error::Interpreter(interpret_error) => {
                     let qs_error: QsError = vec![interpret_error].into();
-                    if let QsError::ErrorMessage { error_text } = qs_error {
-                        error_message.push_str(&error_text);
-                    }
+                    let QsError::ErrorMessage { error_text } = qs_error;
+                    error_message.push_str(&error_text);
                 },
                 resource_estimator::Error::Estimation(estimates_error) => {
                     // Handle `estimates::Error` similarly, if applicable
