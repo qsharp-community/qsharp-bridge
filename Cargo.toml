@@ -9,11 +9,11 @@ edition = "2021"
 crate-type = ["lib", "cdylib", "staticlib"]
 
 [dependencies]
-qsc = { git = "https://github.com/microsoft/qsharp.git", tag = "v1.4.0" }
-resource_estimator = { git = "https://github.com/microsoft/qsharp.git", tag = "v1.4.0" }
+qsc = { git = "https://github.com/microsoft/qsharp.git", branch = "main" }
+resource_estimator = { git = "https://github.com/microsoft/qsharp.git", branch = "main" }
 uniffi = { version = "0.23.0", features=["build"] }
 thiserror = "1.0"
-num-bigint = "0.4.3"
+num-bigint = "0.4.5"
 num-complex = "0.4"
 
 [dev-dependencies]
