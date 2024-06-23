@@ -1,4 +1,4 @@
-use qsharp_bridge::{estimate, estimate_expression, qir, run_qs, run_qs_shots};
+use qsharp_bridge::sim::{estimate, estimate_expression, qir, run_qs, run_qs_shots};
 use serde_json::{Value, from_str};
 
 #[test]
