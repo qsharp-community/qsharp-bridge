@@ -7,6 +7,9 @@ namespace qsharp_bridge {
     sequence<ExecutionState> run_qs_shots([ByRef]string source, u32 shots);
 
     [Throws=QsError]
+    Circuit circuit([ByRef]string source);
+
+    [Throws=QsError]
     string qir([ByRef]string expression);
 
     [Throws=QsError]
@@ -32,4 +35,31 @@ dictionary QubitState {
     string id;
     f64 amplitude_real;
     f64 amplitude_imaginary;
+};
+
+dictionary Circuit {
+    sequence<Operation> operations;
+    sequence<Qubit> qubits;
+};
+
+dictionary Operation {
+    string gate;
+    string? display_args;
+    boolean is_controlled;
+    boolean is_adjoint;
+    boolean is_measurement;
+    sequence<Register> controls;
+    sequence<Register> targets;
+    sequence<Operation> children;
+};
+
+dictionary Register {
+    u64 q_id;
+    u64 register_type;
+    u64? c_id;
+};
+
+dictionary Qubit {
+    u64 id;
+    u64 num_children;
 };
