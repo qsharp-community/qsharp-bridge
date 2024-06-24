@@ -9,55 +9,9 @@ use qsc::{format_state_id, LanguageFeatures, PackageType, TargetCapabilityFlags,
 
 use crate::circuit::Circuit;
 
-
-#[derive(Error, Debug)]
-pub enum QsError {
-    #[error("Error with message: `{error_text}`")]
-    ErrorMessage { error_text: String }
-}
-
-impl From<Vec<interpret::Error>> for QsError {
-    fn from(errors: Vec<interpret::Error>) -> Self {
-        let mut error_message = String::new();
-
-        for error in errors {
-            if let Some(stack_trace) = error.stack_trace() {
-                error_message.push_str(&format!("Stack trace: {}", stack_trace));
-            }
-
-            error_message.push_str(&format!(", error: {:?}", error));
-        }
-
-        QsError::ErrorMessage { error_text: error_message }
-    }
-}
-
-impl From<Vec<resource_estimator::Error>> for QsError {
-    fn from(errors: Vec<resource_estimator::Error>) -> Self {
-        let mut error_message = String::new();
-
-        for error in errors {
-            match error {
-                resource_estimator::Error::Interpreter(interpret_error) => {
-                    let qs_error: QsError = vec![interpret_error].into();
-                    let QsError::ErrorMessage { error_text } = qs_error;
-                    error_message.push_str(&error_text);
-                },
-                resource_estimator::Error::Estimation(estimates_error) => {
-                    // Handle `estimates::Error` similarly, if applicable
-                    error_message.push_str(&format!("Estimation error: {:?}", estimates_error));
-                }
-            }
-        }
-
-        // Ensure that the leading ", " is removed if it's the start of the error message
-        QsError::ErrorMessage { error_text: error_message.trim_start_matches(", ").to_string() }
-    }
-}
-
 pub fn circuit(source: &str) -> Result<Circuit, QsError> {
     let source_map = SourceMap::new(vec![("temp.qs".into(), source.into())], None);
-    let interpreter = match Interpreter::new(
+    let mut interpreter = match Interpreter::new(
         true,
         source_map,
         PackageType::Exe,
@@ -69,6 +23,8 @@ pub fn circuit(source: &str) -> Result<Circuit, QsError> {
             return Err(errors.into());
         }
     };
+    let mut rec = ExecutionState::default();
+    let _ = interpreter.eval_entry(&mut rec)?;
     let result = interpreter.get_circuit();
     return Ok(result.into());
 }
@@ -96,7 +52,6 @@ pub fn run_qs(source: &str) -> Result<ExecutionState, QsError> {
 
 pub fn run_qs_shots(source: &str, shots: u32) -> Result<Vec<ExecutionState>, QsError> {
     let mut results: Vec<ExecutionState> = Vec::new();
-
     let source_map = SourceMap::new(vec![("temp.qs".into(), source.into())], None);
 
     let mut interpreter = match Interpreter::new(
@@ -231,5 +186,50 @@ impl Receiver for ExecutionState {
     fn message(&mut self, msg: &str) -> Result<(), output::Error> {
         self.messages.push(msg.to_string());
         Ok(())
+    }
+}
+
+#[derive(Error, Debug)]
+pub enum QsError {
+    #[error("Error with message: `{error_text}`")]
+    ErrorMessage { error_text: String }
+}
+
+impl From<Vec<interpret::Error>> for QsError {
+    fn from(errors: Vec<interpret::Error>) -> Self {
+        let mut error_message = String::new();
+
+        for error in errors {
+            if let Some(stack_trace) = error.stack_trace() {
+                error_message.push_str(&format!("Stack trace: {}", stack_trace));
+            }
+
+            error_message.push_str(&format!(", error: {:?}", error));
+        }
+
+        QsError::ErrorMessage { error_text: error_message }
+    }
+}
+
+impl From<Vec<resource_estimator::Error>> for QsError {
+    fn from(errors: Vec<resource_estimator::Error>) -> Self {
+        let mut error_message = String::new();
+
+        for error in errors {
+            match error {
+                resource_estimator::Error::Interpreter(interpret_error) => {
+                    let qs_error: QsError = vec![interpret_error].into();
+                    let QsError::ErrorMessage { error_text } = qs_error;
+                    error_message.push_str(&error_text);
+                },
+                resource_estimator::Error::Estimation(estimates_error) => {
+                    // Handle `estimates::Error` similarly, if applicable
+                    error_message.push_str(&format!("Estimation error: {:?}", estimates_error));
+                }
+            }
+        }
+
+        // Ensure that the leading ", " is removed if it's the start of the error message
+        QsError::ErrorMessage { error_text: error_message.trim_start_matches(", ").to_string() }
     }
 }
