@@ -10,19 +10,7 @@ use qsc::{format_state_id, LanguageFeatures, PackageType, TargetCapabilityFlags,
 use crate::circuit::Circuit;
 
 pub fn circuit(source: &str) -> Result<Circuit, QsError> {
-    let source_map = SourceMap::new(vec![("temp.qs".into(), source.into())], None);
-    let mut interpreter = match Interpreter::new(
-        true,
-        source_map,
-        PackageType::Exe,
-        TargetCapabilityFlags::all(),
-        LanguageFeatures::default()
-    ) {
-        Ok(interpreter) => interpreter,
-        Err(errors) => {
-            return Err(errors.into());
-        }
-    };
+    let mut interpreter = create_interpreter(Some(source), PackageType::Exe, TargetCapabilityFlags::all())?;
     let mut rec = ExecutionState::default();
     let _ = interpreter.eval_entry(&mut rec)?;
     let result = interpreter.get_circuit();
@@ -30,20 +18,7 @@ pub fn circuit(source: &str) -> Result<Circuit, QsError> {
 }
 
 pub fn run_qs(source: &str) -> Result<ExecutionState, QsError> {
-    let source_map = SourceMap::new(vec![("temp.qs".into(), source.into())], None);
-    let mut interpreter = match Interpreter::new(
-        true,
-        source_map,
-        PackageType::Exe,
-        TargetCapabilityFlags::all(),
-        LanguageFeatures::default()
-    ) {
-        Ok(interpreter) => interpreter,
-        Err(errors) => {
-            return Err(errors.into());
-        }
-    };
-
+    let mut interpreter = create_interpreter(Some(source), PackageType::Exe, TargetCapabilityFlags::all())?;
     let mut rec = ExecutionState::default();
     let result = interpreter.eval_entry(&mut rec)?;
     rec.set_result(result.to_string());
@@ -52,20 +27,7 @@ pub fn run_qs(source: &str) -> Result<ExecutionState, QsError> {
 
 pub fn run_qs_shots(source: &str, shots: u32) -> Result<Vec<ExecutionState>, QsError> {
     let mut results: Vec<ExecutionState> = Vec::new();
-    let source_map = SourceMap::new(vec![("temp.qs".into(), source.into())], None);
-
-    let mut interpreter = match Interpreter::new(
-        true,
-        source_map,
-        PackageType::Exe,
-        TargetCapabilityFlags::all(),
-        LanguageFeatures::default()
-    ) {
-        Ok(interpreter) => interpreter,
-        Err(errors) => {
-            return Err(errors.into());
-        }
-    };
+    let mut interpreter = create_interpreter(Some(source), PackageType::Exe, TargetCapabilityFlags::all())?;
 
     for _ in 0..shots {
         let mut rec = ExecutionState::default();
@@ -78,49 +40,36 @@ pub fn run_qs_shots(source: &str, shots: u32) -> Result<Vec<ExecutionState>, QsE
 }
 
 pub fn qir(expression: &str) -> Result<String, QsError> {
-    let mut interpreter = match Interpreter::new(
-        true,
-        SourceMap::default(),
-        PackageType::Lib,
-        TargetCapabilityFlags::empty(),
-        LanguageFeatures::default()
-    ) {
-        Ok(interpreter) => interpreter,
-        Err(errors) => {
-            return Err(errors.into());
-        }
-    };
-
+    let mut interpreter = create_interpreter(None, PackageType::Lib, TargetCapabilityFlags::empty())?;
     let result = interpreter.qirgen(expression)?;
     return Ok(result);
 }
 
 pub fn estimate(source: &str, job_params: Option<String>) -> Result<String, QsError> {
-    let source_map = SourceMap::new(vec![("temp.qs".into(), source.into())], None);
-    let mut interpreter = match Interpreter::new(
-        true,
-        source_map,
-        PackageType::Exe,
-        TargetCapabilityFlags::empty(),
-        LanguageFeatures::default()
-    ) {
-        Ok(interpreter) => interpreter,
-        Err(errors) => {
-            return Err(errors.into());
-        }
-    };
-
+    let mut interpreter = create_interpreter(Some(source), PackageType::Exe, TargetCapabilityFlags::empty())?;
     let params = job_params.as_deref().unwrap_or("[{}]");
     let result = estimate_entry(&mut interpreter, params)?;
     return Ok(result);
 }
 
 pub fn estimate_expression(expression: &str, job_params: Option<String>) -> Result<String, QsError> {
-    let mut interpreter = match Interpreter::new(
+    let mut interpreter = create_interpreter(None, PackageType::Lib, TargetCapabilityFlags::empty())?;
+    let params = job_params.as_deref().unwrap_or("[{}]");
+    let result = estimate_expr(&mut interpreter, expression, params)?;
+    return Ok(result);
+}
+
+fn create_interpreter(source: Option<&str>, package_type: PackageType, target_capability_flags: TargetCapabilityFlags) -> Result<Interpreter, QsError> {
+    let source_map = match source {
+        Some(source) => SourceMap::new(vec![("temp.qs".into(), source.into())], None),
+        None => SourceMap::default(),
+    };
+
+    let interpreter = match Interpreter::new(
         true,
-        SourceMap::default(),
-        PackageType::Lib,
-        TargetCapabilityFlags::empty(),
+        source_map,
+        package_type,
+        target_capability_flags,
         LanguageFeatures::default()
     ) {
         Ok(interpreter) => interpreter,
@@ -129,11 +78,8 @@ pub fn estimate_expression(expression: &str, job_params: Option<String>) -> Resu
         }
     };
 
-    let params = job_params.as_deref().unwrap_or("[{}]");
-    let result = estimate_expr(&mut interpreter, expression, params)?;
-    return Ok(result);
+    return Ok(interpreter);
 }
-
 
 pub struct QubitState {
     pub id: String,
