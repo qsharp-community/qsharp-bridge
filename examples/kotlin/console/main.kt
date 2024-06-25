@@ -11,11 +11,10 @@ fun main(args: Array<String>) {
                 use q = Qubit();
                 H(q);
                 let result = MResetZ(q);
-                Message("${'$'}{result}");
+                Message(${'$'}"{result}");
             }
     }
     """
-
     println("Shots: 10")
 
     val resultShots = runQsShots(qsharpSource, 10.toUInt())
