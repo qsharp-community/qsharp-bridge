@@ -1,2 +1,6 @@
 [bindings.csharp]
 cdylib_name = "qsharp_bridge"
+
+[bindings.kotlin]
+package_name = "qsharp.bridge"
+cdylib_name = "qsharp_bridge"

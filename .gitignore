@@ -19,3 +19,5 @@ bindings
 .DS_Store
 examples/swift/console/deps
 qsharp-bridge-swift-sample
+examples/kotlin/console/out
+examples/kotlin/console/deps
