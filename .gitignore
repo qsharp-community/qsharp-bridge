@@ -17,3 +17,5 @@ bin/
 obj/
 bindings
 .DS_Store
+examples/swift/console/deps
+qsharp-bridge-swift-sample
