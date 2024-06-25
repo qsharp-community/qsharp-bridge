@@ -10,7 +10,7 @@ Language bindings for popular languages, surfacing Q# compiler and resource esti
 
 ## Building
 
-1. Install `uniffi-bindgen-cs`
+1. Install `uniffi-bindgen-cs` to support C# bindings generations. The other language bindings are supported without any extra dependencies.
 
 ```bash
 cargo install uniffi-bindgen-cs --git https://github.com/NordSecurity/uniffi-bindgen-cs
