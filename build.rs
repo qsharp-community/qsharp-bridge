@@ -10,7 +10,7 @@ fn main() {
         vec!["kotlin", "swift", "python"], 
         Some(out_dir.into()), 
         None,
-        true).unwrap(); 
+        false).unwrap(); 
 
     Command::new("uniffi-bindgen-cs").arg("--out-dir").arg(out_dir).arg(udl_file).output().expect("Failed when generating C# bindings");
 }
