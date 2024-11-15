@@ -65,12 +65,14 @@ fn create_interpreter(source: Option<&str>, package_type: PackageType, target_ca
         None => SourceMap::default(),
     };
 
+    let (std_id, store) = qsc::compile::package_store_with_stdlib(TargetCapabilityFlags::all());
     let interpreter = match Interpreter::new(
-        true,
         source_map,
         package_type,
         target_capability_flags,
-        LanguageFeatures::default()
+        LanguageFeatures::default(),
+        store,
+        &[(std_id, None)],
     ) {
         Ok(interpreter) => interpreter,
         Err(errors) => {
@@ -131,6 +133,11 @@ impl Receiver for ExecutionState {
 
     fn message(&mut self, msg: &str) -> Result<(), output::Error> {
         self.messages.push(msg.to_string());
+        Ok(())
+    }
+
+    fn matrix(&mut self, _matrix: Vec<Vec<Complex64>>) -> Result<(), output::Error> {
+        // todo
         Ok(())
     }
 }
