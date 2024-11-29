@@ -126,16 +126,13 @@ impl Backend for Qasm2Backend {
         false
     }
 
-    fn mresetz(&mut self, q: usize) -> Self::ResultType {
-        let c = self.cbit_counter;
-        self.cbit_counter += 1;
-        self.code.push(format!("measure q[{}] -> c[{}];", q, c));
-        self.code.push(format!("reset q[{}];", q));
+    fn mresetz(&mut self, _q: usize) -> Self::ResultType {
+        self.errors.push("Reset not supported in QASM 2.0".to_string());
         false
     }
 
-    fn reset(&mut self, q: usize) {
-        self.code.push(format!("reset q[{}];", q));
+    fn reset(&mut self, _q: usize) {
+        self.errors.push("Reset not supported in QASM 2.0".to_string());
     }
 
     fn rxx(&mut self, theta: f64, q0: usize, q1: usize) {
@@ -165,7 +162,8 @@ impl Backend for Qasm2Backend {
     }
 
     fn capture_quantum_state(&mut self) -> (Vec<(BigUint, Complex<f64>)>, usize) {
-        self.errors.push("Capture quantum state not supported in QASM 2.0".to_string());
+        // not supported in qasm 2.0
+        // however we can treat is as no-op
         (Vec::new(), 0)
     }
 
