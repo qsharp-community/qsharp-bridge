@@ -16,3 +16,4 @@ use crate::sim::QubitState;
 
 pub mod circuit;
 pub mod sim;
+pub mod qasm;
