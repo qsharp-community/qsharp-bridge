@@ -72,6 +72,18 @@ pub fn qasm2(source: &str) -> Result<String, QsError> {
     Ok(qasm)
 }
 
+pub fn qasm2_expression(expression: &str) -> Result<String, QsError> {
+    let mut stdout = vec![];
+    let mut out = GenericReceiver::new(&mut stdout);
+    let mut backend = Qasm2Backend::new();
+
+    let mut interpreter = create_interpreter(None, PackageType::Lib, TargetCapabilityFlags::empty())?;
+    let _ = interpreter.run_with_sim(&mut backend, &mut out, Some(expression))?;
+
+    let qasm = backend.get_qasm().map_err(|errors| QsError::ErrorMessage { error_text: errors.join(", ") })?;
+    Ok(qasm)
+}
+
 fn create_interpreter(source: Option<&str>, package_type: PackageType, target_capability_flags: TargetCapabilityFlags) -> Result<Interpreter, QsError> {
     let source_map = match source {
         Some(source) => SourceMap::new(vec![("temp.qs".into(), source.into())], None),
