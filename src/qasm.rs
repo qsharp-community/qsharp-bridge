@@ -136,21 +136,33 @@ impl Backend for Qasm2Backend {
     }
 
     fn rxx(&mut self, theta: f64, q0: usize, q1: usize) {
-        // todo: check if rxx is supported in qasm 2.0, probably not
-        self.code
-            .push(format!("rxx({}) q[{}], q[{}];", theta, q0, q1));
+        self.code.push(format!("h q[{}];", q0));
+        self.code.push(format!("h q[{}];", q1));
+        self.code.push(format!("cx q[{}], q[{}];", q0, q1));
+        self.code.push(format!("rz({}) q[{}];", theta, q1));
+        self.code.push(format!("cx q[{}], q[{}];", q0, q1));
+        self.code.push(format!("h q[{}];", q0));
+        self.code.push(format!("h q[{}];", q1));
     }
 
     fn ryy(&mut self, theta: f64, q0: usize, q1: usize) {
-        // todo: check if rxx is supported in qasm 2.0, probably not
-        self.code
-            .push(format!("ryy({}) q[{}], q[{}];", theta, q0, q1));
+        self.code.push(format!("sdg q[{}];", q0));
+        self.code.push(format!("sdg q[{}];", q1));
+        self.code.push(format!("h q[{}];", q0));
+        self.code.push(format!("h q[{}];", q1));
+        self.code.push(format!("cx q[{}], q[{}];", q0, q1));
+        self.code.push(format!("rz({}) q[{}];", theta, q1));
+        self.code.push(format!("cx q[{}], q[{}];", q0, q1));
+        self.code.push(format!("h q[{}];", q0));
+        self.code.push(format!("h q[{}];", q1));
+        self.code.push(format!("s q[{}];", q0));
+        self.code.push(format!("s q[{}];", q1));
     }
 
     fn rzz(&mut self, theta: f64, q0: usize, q1: usize) {
-        // todo: check if rxx is supported in qasm 2.0, probably not
-        self.code
-            .push(format!("rzz({}) q[{}], q[{}];", theta, q0, q1));
+        self.code.push(format!("cx q[{}], q[{}];", q0, q1));
+        self.code.push(format!("rz({}) q[{}];", theta, q1));
+        self.code.push(format!("cx q[{}], q[{}];", q0, q1));
     }
 
     fn cy(&mut self, ctl: usize, q: usize) {
