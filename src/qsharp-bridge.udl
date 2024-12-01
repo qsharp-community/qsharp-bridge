@@ -13,6 +13,12 @@ namespace qsharp_bridge {
     string qir([ByRef]string expression);
 
     [Throws=QsError]
+    string qasm2([ByRef]string source);
+
+    [Throws=QsError]
+    string qasm2_expression([ByRef]string expression);
+
+    [Throws=QsError]
     string estimate([ByRef]string source, string? job_params);
 
     [Throws=QsError]

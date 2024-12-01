@@ -8,6 +8,8 @@ use crate::sim::circuit;
 use crate::sim::qir;
 use crate::sim::estimate;
 use crate::sim::estimate_expression;
+use crate::sim::qasm2;
+use crate::sim::qasm2_expression;
 use crate::sim::run_qs;
 use crate::sim::run_qs_shots;
 use crate::sim::ExecutionState;
@@ -16,3 +18,4 @@ use crate::sim::QubitState;
 
 pub mod circuit;
 pub mod sim;
+pub mod qasm;

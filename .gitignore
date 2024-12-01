@@ -21,3 +21,7 @@ examples/swift/console/deps
 qsharp-bridge-swift-sample
 examples/kotlin/console/out
 examples/kotlin/console/deps
+.venv/
+libqsharp_bridge.dylib
+examples/python/jupyter/__pycache__
+examples/python/jupyter/qsharp_bridge.py

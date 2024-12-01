@@ -1,4 +1,4 @@
-use qsc::interpret::{Interpreter, self};
+use qsc::interpret::{self, GenericReceiver, Interpreter};
 use resource_estimator::{estimate_entry, estimate_expr};
 use thiserror::Error;
 use num_bigint::BigUint;
@@ -8,6 +8,7 @@ use qsc::interpret::output;
 use qsc::{format_state_id, LanguageFeatures, PackageType, TargetCapabilityFlags, SourceMap};
 
 use crate::circuit::Circuit;
+use crate::qasm::Qasm2Backend;
 
 pub fn circuit(source: &str) -> Result<Circuit, QsError> {
     let mut interpreter = create_interpreter(Some(source), PackageType::Exe, TargetCapabilityFlags::all())?;
@@ -57,6 +58,30 @@ pub fn estimate_expression(expression: &str, job_params: Option<String>) -> Resu
     let params = job_params.as_deref().unwrap_or("[{}]");
     let result = estimate_expr(&mut interpreter, expression, params)?;
     return Ok(result);
+}
+
+pub fn qasm2(source: &str) -> Result<String, QsError> {
+    let mut stdout = vec![];
+    let mut out = GenericReceiver::new(&mut stdout);
+    let mut backend = Qasm2Backend::new();
+
+    let mut interpreter = create_interpreter(Some(source), PackageType::Exe, TargetCapabilityFlags::empty())?;
+    let _ = interpreter.eval_entry_with_sim(&mut backend, &mut out)?;
+
+    let qasm = backend.get_qasm().map_err(|errors| QsError::ErrorMessage { error_text: errors.join(", ") })?;
+    Ok(qasm)
+}
+
+pub fn qasm2_expression(expression: &str) -> Result<String, QsError> {
+    let mut stdout = vec![];
+    let mut out = GenericReceiver::new(&mut stdout);
+    let mut backend = Qasm2Backend::new();
+
+    let mut interpreter = create_interpreter(None, PackageType::Lib, TargetCapabilityFlags::empty())?;
+    let _ = interpreter.run_with_sim(&mut backend, &mut out, Some(expression))?;
+
+    let qasm = backend.get_qasm().map_err(|errors| QsError::ErrorMessage { error_text: errors.join(", ") })?;
+    Ok(qasm)
 }
 
 fn create_interpreter(source: Option<&str>, package_type: PackageType, target_capability_flags: TargetCapabilityFlags) -> Result<Interpreter, QsError> {
@@ -182,7 +207,7 @@ impl From<Vec<resource_estimator::Error>> for QsError {
             }
         }
 
-        // Ensure that the leading ", " is removed if it's the start of the error message
+        // ensure that the leading ", " is removed if it's the start of the error message
         QsError::ErrorMessage { error_text: error_message.trim_start_matches(", ").to_string() }
     }
 }
