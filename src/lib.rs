@@ -15,6 +15,8 @@ use crate::sim::run_qs_shots;
 use crate::sim::ExecutionState;
 use crate::sim::QsError;
 use crate::sim::QubitState;
+use crate::sim::ExecutionOptions;
+use crate::sim::PauliDistribution;
 
 pub mod circuit;
 pub mod sim;

@@ -25,6 +25,22 @@ namespace qsharp_bridge {
     string estimate_expression([ByRef]string expression, string? job_params);
 };
 
+dictionary PauliDistribution {
+    f64 x;
+    f64 y;
+    f64 z;
+};
+
+interface ExecutionOptions {
+    constructor(u32 shots, PauliDistribution noise);
+    
+    [Name=from_shots]
+    constructor(u32 shots);
+
+    [Name=from_noise]
+    constructor(PauliDistribution noise);
+};
+
 [Error]
 interface QsError {
     ErrorMessage(string error_text);
