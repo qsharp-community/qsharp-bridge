@@ -4,7 +4,7 @@ namespace qsharp_bridge {
     ExecutionState run_qs([ByRef]string source);
 
     [Throws=QsError]
-    sequence<ExecutionState> run_qs_shots([ByRef]string source, u32 shots);
+    sequence<ExecutionState> run_qs_with_options([ByRef]string source, ExecutionOptions options);
 
     [Throws=QsError]
     Circuit circuit([ByRef]string source);

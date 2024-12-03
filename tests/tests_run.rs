@@ -1,4 +1,6 @@
-use qsharp_bridge::sim::{run_qs, run_qs_shots};
+use std::sync::Arc;
+
+use qsharp_bridge::sim::{run_qs, run_qs_with_options, ExecutionOptions};
 
 #[test]
 fn test_hello() {
@@ -18,7 +20,7 @@ fn test_hello() {
 #[test]
 fn test_hello_shots() {
     let source = std::fs::read_to_string("tests/assets/hello.qs").unwrap();
-    let result = run_qs_shots(&source, 100).unwrap();
+    let result = run_qs_with_options(&source, Arc::new(ExecutionOptions::from_shots(100))).unwrap();
 
     assert_eq!(result.len(), 100);
     for res in &result {
@@ -51,7 +53,7 @@ fn test_entanglement() {
 #[test]
 fn test_entanglement_shots() {
     let source = std::fs::read_to_string("tests/assets/entanglement.qs").unwrap();
-    let result = run_qs_shots(&source, 100).unwrap();
+    let result = run_qs_with_options(&source, Arc::new(ExecutionOptions::from_shots(100))).unwrap();
 
     assert_eq!(result.len(), 100);
 
@@ -83,7 +85,7 @@ fn test_teleportation() {
 #[test]
 fn test_teleportation_shots() {
     let source = std::fs::read_to_string("tests/assets/teleportation.qs").unwrap();
-    let result = run_qs_shots(&source, 100).unwrap();
+    let result = run_qs_with_options(&source, Arc::new(ExecutionOptions::from_shots(100))).unwrap();
 
     assert_eq!(result.len(), 100);
 
