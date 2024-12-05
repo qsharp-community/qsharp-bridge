@@ -1,5 +1,6 @@
-import qsharp.bridge.runQsShots
+import qsharp.bridge.runQsWithOptions
 import qsharp.bridge.ExecutionState
+import qsharp.bridge.ExecutionOptions
 
 fun main(args: Array<String>) {
     System.setProperty("jna.library.path", "/Users/filipw/dev/qsharp-bridge/examples/kotlin/console/deps")
@@ -17,7 +18,8 @@ fun main(args: Array<String>) {
     """
     println("Shots: 10")
 
-    val resultShots = runQsShots(qsharpSource, 10.toUInt())
+    val options = ExecutionOptions.fromShots(10.toUInt())
+    val resultShots = runQsWithOptions(qsharpSource, options)
 
     for (i in 0 until 10) {
         println()
