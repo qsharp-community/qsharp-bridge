@@ -22,14 +22,16 @@ impl Qasm2Backend {
         }
     }
 
-    pub fn get_qasm(&self) -> Result<String, Vec<String>> {
+    pub fn get_qasm(&self, include_qelib: bool) -> Result<String, Vec<String>> {
         if !self.errors.is_empty() {
             return Err(self.errors.clone());
         }
 
         let mut qasm = String::new();
         qasm.push_str("OPENQASM 2.0;\n");
-        qasm.push_str("include \"qelib1.inc\";\n");
+        if include_qelib {
+            qasm.push_str("include \"qelib1.inc\";\n");
+        }
         let n_qubits = self.next_qubit_id;
         qasm.push_str(&format!("qreg q[{}];\n", n_qubits));
         if self.cbit_counter > 0 {
@@ -189,11 +191,23 @@ impl Backend for Qasm2Backend {
         name: &str,
         _arg: Value,
     ) -> Option<Result<Value, String>> {
-        self.errors.push(format!(
-            "Custom intrinsic '{}' not supported in QASM 2.0",
-            name
-        ));
-        None
+        match name {
+            "GlobalPhase" => {
+                // given that QASM 2.0 does not support global phase adjustments 
+                // or dynamic qubit allocation and deallocation, 
+                // and considering that global phases are generally unobservable, 
+                // the most practical solution is to ignore the GlobalPhase intrinsic
+                // but let the program continue
+                Some(Ok(Value::unit()))
+            }
+            _ => {
+                self.errors.push(format!(
+                    "Custom intrinsic '{}' not supported in QASM 2.0",
+                    name
+                ));
+                None
+            }
+        }
     }
 
     fn set_seed(&mut self, _seed: Option<u64>) {
