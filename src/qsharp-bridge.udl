@@ -4,7 +4,7 @@ namespace qsharp_bridge {
     ExecutionState run_qs([ByRef]string source);
 
     [Throws=QsError]
-    sequence<ExecutionState> run_qs_shots([ByRef]string source, u32 shots);
+    sequence<ExecutionState> run_qs_with_options([ByRef]string source, ExecutionOptions options);
 
     [Throws=QsError]
     Circuit circuit([ByRef]string source);
@@ -23,6 +23,22 @@ namespace qsharp_bridge {
 
     [Throws=QsError]
     string estimate_expression([ByRef]string expression, string? job_params);
+};
+
+dictionary PauliDistribution {
+    f64 x;
+    f64 y;
+    f64 z;
+};
+
+interface ExecutionOptions {
+    constructor(u32 shots, PauliDistribution noise);
+    
+    [Name=from_shots]
+    constructor(u32 shots);
+
+    [Name=from_noise]
+    constructor(PauliDistribution noise);
 };
 
 [Error]

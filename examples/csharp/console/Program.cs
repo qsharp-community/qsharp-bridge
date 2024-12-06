@@ -13,7 +13,8 @@ namespace MyQuantumApp {
 """;
 
 Console.WriteLine("Shots: 10");
-var resultShots = QsharpBridgeMethods.RunQsShots(qsharpSource, 10);
+var executionOptions = ExecutionOptions.FromShots(10);
+var resultShots = QsharpBridge.RunQsWithOptions(qsharpSource, executionOptions);
 for (var i=0; i<10; i++) {
     Console.WriteLine();
     Console.WriteLine($"Shot {i+1} of 10");

@@ -2,19 +2,20 @@ import qsharp_bridgeFFI
 
 let qsharpSource = """
 namespace MyQuantumApp {
-        @EntryPoint()
-        operation Main() : Unit {
-            use q = Qubit();
-            H(q);
-            let result = MResetZ(q);
-            Message($"{result}");
-        }
+    @EntryPoint()
+    operation Main() : Unit {
+        use q = Qubit();
+        H(q);
+        let result = MResetZ(q);
+        Message($"{result}");
+    }
 }
 """
 
 print("Shots: 10")
 
-let resultShots = try! runQsShots(source: qsharpSource, shots: 10)
+let options = ExecutionOptions.fromShots(shots: 10)
+let resultShots = try! runQsWithOptions(source: qsharpSource, options: options)
 
 for i in 0..<10 {
     print()

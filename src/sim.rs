@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use qsc::interpret::{self, GenericReceiver, Interpreter};
 use resource_estimator::{estimate_entry, estimate_expr};
 use thiserror::Error;
@@ -5,10 +7,60 @@ use num_bigint::BigUint;
 use num_complex::Complex64;
 use qsc::interpret::output::Receiver;
 use qsc::interpret::output;
-use qsc::{format_state_id, LanguageFeatures, PackageType, TargetCapabilityFlags, SourceMap};
+use qsc::{format_state_id, LanguageFeatures, PackageType, PauliNoise, SourceMap, SparseSim, TargetCapabilityFlags};
 
 use crate::circuit::Circuit;
 use crate::qasm::Qasm2Backend;
+
+pub struct ExecutionOptions {
+    pub shots: u32,
+    pub noise: PauliDistribution,
+}
+
+pub struct PauliDistribution {
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
+}
+
+impl PauliDistribution {
+    pub fn new(x: f64, y: f64, z: f64) -> Result<Self, QsError> {
+        if x < 0.0 || y < 0.0 || z < 0.0 || x + y + z > 1.0 {
+            return Err(QsError::ErrorMessage { error_text: "Invalid Pauli distribution: values must be non-negative and sum to <= 1.0".to_string() });
+        }
+        Ok(Self { x, y, z })
+    }
+}
+
+
+impl ExecutionOptions {
+    pub fn new(shots: u32, noise: PauliDistribution) -> Self {
+        Self { shots, noise }
+    }
+
+    pub fn from_shots(shots: u32) -> Self {
+        Self {
+            shots,
+            ..Default::default()
+        }
+    }
+
+    pub fn from_noise(noise: PauliDistribution) -> Self {
+        Self {
+            noise,
+            ..Default::default()
+        }
+    }
+}
+
+impl Default for ExecutionOptions {
+    fn default() -> Self {
+        Self {
+            shots: 1,
+            noise: PauliDistribution::new(0.0, 0.0, 0.0).unwrap(),
+        }
+    }
+}
 
 pub fn circuit(source: &str) -> Result<Circuit, QsError> {
     let mut interpreter = create_interpreter(Some(source), PackageType::Exe, TargetCapabilityFlags::all())?;
@@ -26,13 +78,21 @@ pub fn run_qs(source: &str) -> Result<ExecutionState, QsError> {
     return Ok(rec);
 }
 
-pub fn run_qs_shots(source: &str, shots: u32) -> Result<Vec<ExecutionState>, QsError> {
+pub fn run_qs_with_options(source: &str, options: Arc<ExecutionOptions>) -> Result<Vec<ExecutionState>, QsError> {
     let mut results: Vec<ExecutionState> = Vec::new();
     let mut interpreter = create_interpreter(Some(source), PackageType::Exe, TargetCapabilityFlags::all())?;
 
+    let mut sim = if options.noise.x == 0.0 && options.noise.y == 0.0 && options.noise.z == 0.0 {
+        SparseSim::new() //default
+    } else {
+        let noise = PauliNoise::from_probabilities(options.noise.x, options.noise.y, options.noise.z).map_err(|error| QsError::ErrorMessage { error_text: error })?;
+        SparseSim::new_with_noise(&noise)
+    };
+
+    let shots = options.shots;
     for _ in 0..shots {
         let mut rec = ExecutionState::default();
-        let result = interpreter.eval_entry(&mut rec)?;
+        let result = interpreter.eval_entry_with_sim(&mut sim, &mut rec)?;
         rec.set_result(result.to_string());
         results.push(rec)
     }
