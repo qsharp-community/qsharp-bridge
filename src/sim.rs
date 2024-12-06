@@ -128,7 +128,7 @@ pub fn qasm2(source: &str) -> Result<String, QsError> {
     let mut interpreter = create_interpreter(Some(source), PackageType::Exe, TargetCapabilityFlags::empty())?;
     let _ = interpreter.eval_entry_with_sim(&mut backend, &mut out)?;
 
-    let qasm = backend.get_qasm().map_err(|errors| QsError::ErrorMessage { error_text: errors.join(", ") })?;
+    let qasm = backend.get_qasm(false).map_err(|errors| QsError::ErrorMessage { error_text: errors.join(", ") })?;
     Ok(qasm)
 }
 
@@ -140,7 +140,7 @@ pub fn qasm2_expression(expression: &str) -> Result<String, QsError> {
     let mut interpreter = create_interpreter(None, PackageType::Lib, TargetCapabilityFlags::empty())?;
     let _ = interpreter.run_with_sim(&mut backend, &mut out, Some(expression))?;
 
-    let qasm = backend.get_qasm().map_err(|errors| QsError::ErrorMessage { error_text: errors.join(", ") })?;
+    let qasm = backend.get_qasm(false).map_err(|errors| QsError::ErrorMessage { error_text: errors.join(", ") })?;
     Ok(qasm)
 }
 

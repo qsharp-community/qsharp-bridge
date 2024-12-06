@@ -1,5 +1,6 @@
 #!/bin/bash
 
+rm -fr __pycache__
 rm -f qsharp_bridge.dylib
 rm -f qsharp_bridge.so
 rm -f qsharp_bridge.py
