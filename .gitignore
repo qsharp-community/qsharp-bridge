@@ -25,3 +25,4 @@ examples/kotlin/console/deps
 libqsharp_bridge.dylib
 examples/python/jupyter/__pycache__
 examples/python/jupyter/qsharp_bridge.py
+.env
