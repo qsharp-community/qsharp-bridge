@@ -1,0 +1,3 @@
+ipykernel
+python-dotenv
+qsharp
