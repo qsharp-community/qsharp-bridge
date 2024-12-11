@@ -17,6 +17,8 @@ use crate::sim::QsError;
 use crate::sim::QubitState;
 use crate::sim::ExecutionOptions;
 use crate::sim::PauliDistribution;
+use crate::qasm::QasmGenerationOptions;
+use crate::qasm::QasmResetBehavior;
 
 pub mod circuit;
 pub mod sim;

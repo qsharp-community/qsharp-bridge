@@ -9,27 +9,40 @@ pub(crate) struct Qasm2Backend {
     qubits: HashSet<usize>,
     next_qubit_id: usize,
     cbit_counter: usize,
+    generation_options: QasmGenerationOptions,
+}
+
+pub struct QasmGenerationOptions {
+    pub include_qelib: bool,
+    pub reset_behavior: QasmResetBehavior,
+}
+
+pub enum QasmResetBehavior {
+    Supported,
+    Ignored,
+    Error,
 }
 
 impl Qasm2Backend {
-    pub fn new() -> Self {
+    pub fn new(generation_options: QasmGenerationOptions) -> Self {
         Qasm2Backend {
             code: Vec::new(),
             qubits: HashSet::new(),
             next_qubit_id: 0,
             cbit_counter: 0,
             errors: Vec::new(),
+            generation_options
         }
     }
 
-    pub fn get_qasm(&self, include_qelib: bool) -> Result<String, Vec<String>> {
+    pub fn get_qasm(&self) -> Result<String, Vec<String>> {
         if !self.errors.is_empty() {
             return Err(self.errors.clone());
         }
 
         let mut qasm = String::new();
         qasm.push_str("OPENQASM 2.0;\n");
-        if include_qelib {
+        if self.generation_options.include_qelib {
             qasm.push_str("include \"qelib1.inc\";\n");
         }
         let n_qubits = self.next_qubit_id;
@@ -128,13 +141,38 @@ impl Backend for Qasm2Backend {
         false
     }
 
-    fn mresetz(&mut self, _q: usize) -> Self::ResultType {
-        self.errors.push("Reset not supported in QASM 2.0".to_string());
-        false
+    fn mresetz(&mut self, q: usize) -> Self::ResultType {
+        match self.generation_options.reset_behavior {
+            QasmResetBehavior::Supported => {
+                let c = self.cbit_counter;
+                self.cbit_counter += 1;
+                self.code.push(format!("measure q[{}] -> c[{}];", q, c));
+                self.code.push(format!("reset q[{}];", q));
+                false
+            }
+            QasmResetBehavior::Ignored => {
+                let c = self.cbit_counter;
+                self.cbit_counter += 1;
+                self.code.push(format!("measure q[{}] -> c[{}];", q, c));
+                false
+            }
+            QasmResetBehavior::Error => {
+                self.errors.push("Reset is not supported".to_string());
+                false
+            }
+        }
     }
 
-    fn reset(&mut self, _q: usize) {
-        self.errors.push("Reset not supported in QASM 2.0".to_string());
+    fn reset(&mut self, q: usize) {
+        match self.generation_options.reset_behavior {
+            QasmResetBehavior::Supported => {
+                self.code.push(format!("reset q[{}];", q));
+            }
+            QasmResetBehavior::Ignored => {}
+            QasmResetBehavior::Error => {
+                self.errors.push("Reset is not supported".to_string());
+            }
+        }
     }
 
     fn rxx(&mut self, theta: f64, q0: usize, q1: usize) {
