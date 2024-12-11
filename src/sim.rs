@@ -10,7 +10,7 @@ use qsc::interpret::output;
 use qsc::{format_state_id, LanguageFeatures, PackageType, PauliNoise, SourceMap, SparseSim, TargetCapabilityFlags};
 
 use crate::circuit::Circuit;
-use crate::qasm::Qasm2Backend;
+use crate::qasm::{Qasm2Backend, QasmGenerationOptions};
 
 pub struct ExecutionOptions {
     pub shots: u32,
@@ -120,27 +120,27 @@ pub fn estimate_expression(expression: &str, job_params: Option<String>) -> Resu
     return Ok(result);
 }
 
-pub fn qasm2(source: &str) -> Result<String, QsError> {
+pub fn qasm2(source: &str, generation_options: QasmGenerationOptions) -> Result<String, QsError> {
     let mut stdout = vec![];
     let mut out = GenericReceiver::new(&mut stdout);
-    let mut backend = Qasm2Backend::new();
+    let mut backend = Qasm2Backend::new(generation_options);
 
     let mut interpreter = create_interpreter(Some(source), PackageType::Exe, TargetCapabilityFlags::empty())?;
     let _ = interpreter.eval_entry_with_sim(&mut backend, &mut out)?;
 
-    let qasm = backend.get_qasm(false).map_err(|errors| QsError::ErrorMessage { error_text: errors.join(", ") })?;
+    let qasm = backend.get_qasm().map_err(|errors| QsError::ErrorMessage { error_text: errors.join(", ") })?;
     Ok(qasm)
 }
 
-pub fn qasm2_expression(expression: &str) -> Result<String, QsError> {
+pub fn qasm2_expression(expression: &str, generation_options: QasmGenerationOptions) -> Result<String, QsError> {
     let mut stdout = vec![];
     let mut out = GenericReceiver::new(&mut stdout);
-    let mut backend = Qasm2Backend::new();
+    let mut backend = Qasm2Backend::new(generation_options);
 
     let mut interpreter = create_interpreter(None, PackageType::Lib, TargetCapabilityFlags::empty())?;
     let _ = interpreter.run_with_sim(&mut backend, &mut out, Some(expression))?;
 
-    let qasm = backend.get_qasm(false).map_err(|errors| QsError::ErrorMessage { error_text: errors.join(", ") })?;
+    let qasm = backend.get_qasm().map_err(|errors| QsError::ErrorMessage { error_text: errors.join(", ") })?;
     Ok(qasm)
 }
 

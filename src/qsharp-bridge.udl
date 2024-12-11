@@ -13,16 +13,27 @@ namespace qsharp_bridge {
     string qir([ByRef]string expression);
 
     [Throws=QsError]
-    string qasm2([ByRef]string source);
+    string qasm2([ByRef]string source, QasmGenerationOptions generation_options);
 
     [Throws=QsError]
-    string qasm2_expression([ByRef]string expression);
+    string qasm2_expression([ByRef]string expression, QasmGenerationOptions generation_options);
 
     [Throws=QsError]
     string estimate([ByRef]string source, string? job_params);
 
     [Throws=QsError]
     string estimate_expression([ByRef]string expression, string? job_params);
+};
+
+dictionary QasmGenerationOptions {
+    boolean include_qelib;
+    QasmResetBehavior reset_behavior;
+};
+
+enum QasmResetBehavior {
+    "Supported",
+    "Ignored",
+    "Error"
 };
 
 dictionary PauliDistribution {
