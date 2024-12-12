@@ -1,18 +1,27 @@
 import qsharp_bridgeFFI
 
 let qsharpSource = """
-namespace MyQuantumApp {
-    @EntryPoint()
-    operation Main() : Unit {
-        use q = Qubit();
-        H(q);
-        let result = MResetZ(q);
-        Message($"{result}");
-    }
+@EntryPoint()
+operation Run() : (Result, Result) {
+    use (control, target) = (Qubit(), Qubit());
+    PrepareBellState(control, target);
+    
+    let resultControl = MResetZ(control);
+    let resultTarget = MResetZ(target);
+    return (resultControl, resultTarget);
+}
+
+operation PrepareBellState(q1 : Qubit, q2: Qubit) : Unit {
+    H(q1);
+    CNOT(q1, q2);
 }
 """
 
-print("Shots: 10")
+let qasmGenerationOptions = QasmGenerationOptions(includeQelib: false, resetBehavior: .supported);
+let qasm = try! qasm2(source: qsharpSource, generationOptions: qasmGenerationOptions);
+print("Generated QASM:");
+print(qasm);
+
 
 let options = ExecutionOptions.fromShots(shots: 10)
 let resultShots = try! runQsWithOptions(source: qsharpSource, options: options)

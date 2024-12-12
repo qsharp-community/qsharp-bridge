@@ -1,22 +1,34 @@
 import qsharp.bridge.runQsWithOptions
+import qsharp.bridge.qasm2
 import qsharp.bridge.ExecutionState
 import qsharp.bridge.ExecutionOptions
+import qsharp.bridge.QasmGenerationOptions
+import qsharp.bridge.QasmResetBehavior
 
 fun main(args: Array<String>) {
     System.setProperty("jna.library.path", "/Users/filipw/dev/qsharp-bridge/examples/kotlin/console/deps")
 
     val qsharpSource = """
-    namespace MyQuantumApp {
-            @EntryPoint()
-            operation Main() : Unit {
-                use q = Qubit();
-                H(q);
-                let result = MResetZ(q);
-                Message(${'$'}"{result}");
-            }
-    }
+        @EntryPoint()
+        operation Run() : (Result, Result) {
+            use (control, target) = (Qubit(), Qubit());
+            PrepareBellState(control, target);
+            
+            let resultControl = MResetZ(control);
+            let resultTarget = MResetZ(target);
+            return (resultControl, resultTarget);
+        }
+
+        operation PrepareBellState(q1 : Qubit, q2: Qubit) : Unit {
+            H(q1);
+            CNOT(q1, q2);
+        }
     """
-    println("Shots: 10")
+
+    val qasmGenerationOptions = QasmGenerationOptions(false, QasmResetBehavior.SUPPORTED);
+    val qasm = qasm2(qsharpSource, qasmGenerationOptions);
+    println("Generated QASM:");
+    println(qasm);
 
     val options = ExecutionOptions.fromShots(10.toUInt())
     val resultShots = runQsWithOptions(qsharpSource, options)
