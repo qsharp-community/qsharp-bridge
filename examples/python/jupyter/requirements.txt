@@ -1,3 +1,6 @@
 ipykernel
 python-dotenv
 qsharp
+qsharp_widgets
+matplotlib
+requests
