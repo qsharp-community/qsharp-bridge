@@ -1,6 +1,7 @@
-﻿using uniffi.qsharp_bridge;
+﻿using QsharpBridge;
 
-var qsharpSource = """@EntryPoint()
+var qsharpSource = """
+@EntryPoint()
 operation Run() : (Result, Result) {
     use (control, target) = (Qubit(), Qubit());
     PrepareBellState(control, target);
@@ -17,12 +18,12 @@ operation PrepareBellState(q1 : Qubit, q2: Qubit) : Unit {
 """;
 
 var qasmGenerationOptions = new QasmGenerationOptions(includeQelib: false, resetBehavior: QasmResetBehavior.Supported);
-var qasm = QsharpBridge.Qasm2(qsharpSource, qasmGenerationOptions);
+var qasm = GlobalQsharpBridge.Qasm2(qsharpSource, qasmGenerationOptions);
 Console.WriteLine("Generated QASM:");
 Console.WriteLine(qasm);
 
 var executionOptions = ExecutionOptions.FromShots(10);
-var resultShots = QsharpBridge.RunQsWithOptions(qsharpSource, executionOptions);
+var resultShots = GlobalQsharpBridge.RunQsWithOptions(qsharpSource, executionOptions);
 for (var i=0; i<10; i++) {
     Console.WriteLine();
     Console.WriteLine($"Shot {i+1} of 10");
