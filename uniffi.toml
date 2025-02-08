@@ -1,7 +1,8 @@
 [bindings.csharp]
 cdylib_name = "qsharp_bridge"
 access_modifier = "public"
-global_methods_class_name = "QsharpBridge"
+global_methods_class_name = "GlobalQsharpBridge"
+namespace = "QsharpBridge"
 
 [bindings.kotlin]
 package_name = "qsharp.bridge"
