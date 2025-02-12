@@ -12,7 +12,7 @@ def _load_native_lib():
     elif sys.platform.startswith("win"):
         machine = platform.machine().lower()
         if machine in ("amd64", "x86_64"):
-            lib_name = "qsharp_bridge_x64.dll"
+            lib_name = "qsharp_bridge.dll"
         elif machine in ("arm64", "aarch64"):
             lib_name = "qsharp_bridge_arm64.dll"
         else:

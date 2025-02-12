@@ -30,7 +30,7 @@ def get_lib_filename():
     elif sys.platform.startswith("win"):
         # what an ambition, arm64 Windows support. maybe it will work?
         if machine in ("amd64", "x86_64"):
-            return "qsharp_bridge_x64.dll"
+            return "qsharp_bridge.dll"
         elif machine in ("arm64", "aarch64"):
             return "qsharp_bridge_arm64.dll"
         else:
