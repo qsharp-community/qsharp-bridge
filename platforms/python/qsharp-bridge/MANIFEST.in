@@ -1,0 +1,1 @@
+recursive-include qsharp_bridge *.so *.dylib *.dll

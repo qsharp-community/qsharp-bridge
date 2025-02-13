@@ -4,3 +4,4 @@ qsharp
 qsharp_widgets
 matplotlib
 requests
+../../../platforms/python/qsharp-bridge

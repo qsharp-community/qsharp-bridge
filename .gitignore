@@ -26,3 +26,7 @@ libqsharp_bridge.dylib
 examples/python/jupyter/__pycache__
 examples/python/jupyter/qsharp_bridge.py
 .env
+platforms/python/qsharp-bridge/build
+platforms/python/qsharp-bridge/dist
+platforms/python/qsharp-bridge/qsharp_bridge.egg-info
+qsharp_bridge.py
