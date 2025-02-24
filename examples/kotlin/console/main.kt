@@ -6,6 +6,7 @@ import qsharp.bridge.QasmGenerationOptions
 import qsharp.bridge.QasmResetBehavior
 
 fun main(args: Array<String>) {
+    // set to correct absolute path
     System.setProperty("jna.library.path", "/Users/filipw/dev/qsharp-bridge/examples/kotlin/console/deps")
 
     val qsharpSource = """
