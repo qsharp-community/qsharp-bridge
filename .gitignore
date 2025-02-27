@@ -30,3 +30,6 @@ platforms/python/qsharp-bridge/build
 platforms/python/qsharp-bridge/dist
 platforms/python/qsharp-bridge/qsharp_bridge.egg-info
 qsharp_bridge.py
+artifacts
+platforms/swift/Qsharp.Bridge/.build
+platforms/swift/Qsharp.Bridge/Libs/qsharp_bridge_framework.xcframework
