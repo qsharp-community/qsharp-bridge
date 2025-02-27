@@ -1,4 +1,4 @@
-import qsharp_bridgeFFI
+//import qsharp_bridgeFFI
 
 let qsharpSource = """
 @EntryPoint()
