@@ -16,13 +16,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Rust Toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-          components: clippy, rustfmt
-
       - name: Install uniffi-bindgen-cs
         run: |
           cargo install uniffi-bindgen-cs --git https://github.com/NordSecurity/uniffi-bindgen-cs --tag v0.2.0
@@ -46,3 +39,30 @@ jobs:
         with:
           name: qsharp-bridge-wheel-${{ matrix.os }}
           path: platforms/python/qsharp-bridge/dist/*.whl
+
+  build-swift:
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Rust targets
+        run: |
+          rustup target add aarch64-apple-ios
+          rustup target add aarch64-apple-ios-sim
+          rustup target add aarch64-apple-darwin
+
+      - name: Build Swift Package
+        run: ./build-swift.sh
+
+      - name: Clean temporary build files from Swift Package
+        if: github.event_name != 'pull_request'
+        run: rm -rf platforms/swift/Qsharp.Bridge/.build
+
+      - name: Upload artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Qsharp.Bridge-SwiftPackage
+          path: platforms/swift/Qsharp.Bridge
