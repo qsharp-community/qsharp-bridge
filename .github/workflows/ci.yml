@@ -54,7 +54,7 @@ jobs:
           rustup target add aarch64-apple-darwin
 
       - name: Build Swift Package
-        run: ./build-swift.sh
+        run: ./build_swift.sh
 
       - name: Clean temporary build files from Swift Package
         if: github.event_name != 'pull_request'
