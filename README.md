@@ -1,31 +1,118 @@
-# qsharp-bridge
-Language bindings for popular languages, surfacing Q# compiler and resource estimator APIs
+# Q# Bridge
 
-## Supported Languages
+A cross-platform library for Swift/Kotlin/C#/Python, surfacing features of the Q# compiler and resource estimator.
 
-- C#
-- Swift
-- Kotlin
-- Python (though that is also natively supported by Q# already)
+## Supported platforms and languages
 
-## Building
+|                        | **Swift**                                        | **.NET**                                                                                    | **Kotlin**                        | **Python**                                                  |
+|------------------------|--------------------------------------------------|---------------------------------------------------------------------------------------------|-----------------------------------|-------------------------------------------------------------|
+| **Package**            | Swift Package                                    | Nuget                                                                                       | N/A                               | Wheel                                                         |
+| **Manual Integration** | Bindings + XCFramework Bindings + native library | Bindings + native library                                                                   | Bindings + native library         | Bindings + native library                                   |
+| **Platforms**          | macOS arm64<br/>iOS                                  | Windows x64<br/>Windows arm64 (not via Nuget)<br/>Linux x64<br/>Linux arm64 (not via Nuget)<br/>macOS arm64 | Windows x64<br/>Linux x64<br/>macOS arm64 | Windows x64<br/>Windows arm64<br/>Linux x64<br/>Linux arm64<br/>macOS arm64 |
 
-1. Install `uniffi-bindgen-cs` to support C# bindings generations. The other language bindings are supported without any extra dependencies.
+## Building instructions
 
-```bash
-cargo install uniffi-bindgen-cs --git https://github.com/NordSecurity/uniffi-bindgen-cs
+### Swift
+
+Build the Swift Package (arm64 Mac required).
+
+```shell
+./build_swift.sh
 ```
 
-2. Run the following command to build the project:
+This builds:
+ - the Swift Package under `platforms/swift/QSharp.Bridge`
+ - XCFramework under `artifacts/swift/qsharp_bridge_framework.xcframework`
 
-```bash
+Now run the Swift console app:
+
+```shell
+cd examples/swuft/console
+./run.sh
+```
+
+### C#
+
+Install UniFFI C# bindings generator
+
+```shell
+cargo install uniffi-bindgen-cs --git https://github.com/NordSecurity/uniffi-bindgen-cs --tag v0.8.0+v0.25.0
+```
+
+Build the Nuget package for your platform:
+
+```shell
 cargo build --release
 ```
 
-3. The language bindings are generated into the `bindings` directory.
+Now run the .NET console app:
 
-4. The native library is located under `./target/release/libqsharp_bridge.{so|dll|dylib|a}`.
+```shell
+cd examples/csharp/console
+dotnet run -c Release
+```
 
-## Examples
+### Kotlin
 
-Explore the C#/Swift/Kotlin examples [here](./examples).
+Go the Kotlin sample and run it from there:
+
+```shell
+cd samples/kotlin
+./run.sh
+```
+
+### Python
+
+First build the Wheel:
+
+```shell
+cd platforms/python/qsharp-bridge
+python -m pip install --upgrade pip setuptools wheel
+python setup.py sdist bdist_wheel
+```
+
+You can then use the Jupyter Notebooks:
+
+```shell
+cd samples/python/jupyter
+```
+
+Make sure you have created a Virtual Environment or activated a Conda environment, and install the dependencies (including the Wheel):
+
+```shell
+pip install -r requirements.txt
+```
+
+Now open the Notebook and run the cells.
+
+## Compatibility notes
+
+### .NET
+
+✅ Tested on Windows arm64
+
+✅ Tested on Windows x64
+
+✅ Tested on Linux arm64
+
+✅ Tested on Linux x64
+
+✅ Tested on macOS arm64
+
+### Swift
+
+✅ Tested on macOS arm64.
+
+✅ Tested on iPadOS
+
+✅ Tested on iOS
+
+### Kotlin
+
+✅ Tested on macOS arm64.
+
+### Python
+
+✅ Tested on Windows arm64
+
+✅ Tested on macOS arm64

@@ -33,3 +33,4 @@ qsharp_bridge.py
 artifacts
 platforms/swift/Qsharp.Bridge/.build
 platforms/swift/Qsharp.Bridge/Libs/qsharp_bridge_framework.xcframework
+platforms/swift/Qsharp.Bridge/.swiftpm/xcode/xcuserdata/filipw.xcuserdatad/xcschemes/xcschememanagement.plist
