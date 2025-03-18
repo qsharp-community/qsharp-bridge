@@ -1,7 +1,13 @@
 name: Release Assets
 on:
   release:
-    types: [created]
+    types: [created, published, edited]
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag to build release assets for'
+        required: true
+        default: '0.0.0'
 
 jobs:
   build-wheels:
