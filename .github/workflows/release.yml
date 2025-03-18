@@ -1,7 +1,7 @@
 name: Release Assets
 on:
   release:
-    types: [created, published, edited]
+    types: [published]
   workflow_dispatch:
     inputs:
       tag_name:
