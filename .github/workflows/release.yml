@@ -18,40 +18,74 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        
+      - name: Set version from tag
+        id: get_version
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
+          fi
+        shell: bash
+        
+      - name: Show version
+        run: echo "Building version ${{ env.VERSION }}"
+        shell: bash
+        
       - name: Install uniffi-bindgen-cs
         run: |
           cargo install uniffi-bindgen-cs --git https://github.com/NordSecurity/uniffi-bindgen-cs --tag v0.2.0
+          
       - name: Build Rust Library
         run: |
           cargo build --release --manifest-path ${{ github.workspace }}/Cargo.toml
+          
       - name: Build Python Package
         working-directory: platforms/python/qsharp-bridge
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          python setup.py sdist bdist_wheel
+          python setup.py sdist bdist_wheel --version ${{ env.VERSION }}
+        env:
+          PACKAGE_VERSION: ${{ env.VERSION }}
+          
       - name: Upload wheels to release
         uses: softprops/action-gh-release@v1
         with:
           files: platforms/python/qsharp-bridge/dist/*.whl
-
+          
   build-swift-package:
     runs-on: macos-15
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        
+      - name: Set version from tag
+        id: get_version
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
+          fi
+        
       - name: Install Rust targets
         run: |
           rustup target add aarch64-apple-ios
           rustup target add aarch64-apple-ios-sim
           rustup target add aarch64-apple-darwin
+          
       - name: Build Swift Package
         run: ./build_swift.sh
+        
       - name: Clean temporary build files from Swift Package
         run: rm -rf platforms/swift/Qsharp.Bridge/.build
+        
       - name: Create zip archive of Swift Package
         run: |
           cd platforms/swift
           zip -r Qsharp.Bridge-SwiftPackage.zip Qsharp.Bridge
+          
       - name: Upload Swift Package to release
         uses: softprops/action-gh-release@v1
         with:

@@ -32,7 +32,9 @@ jobs:
         working-directory: platforms/python/qsharp-bridge
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          python setup.py sdist bdist_wheel
+          python setup.py sdist bdist_wheel --version ${{ env.VERSION }}
+        env:
+          PACKAGE_VERSION: 0.99.0
 
       - name: Upload Python Package Artifact
         uses: actions/upload-artifact@v4
