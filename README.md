@@ -36,7 +36,7 @@ cd examples/swuft/console
 Install UniFFI C# bindings generator
 
 ```shell
-cargo install uniffi-bindgen-cs --git https://github.com/NordSecurity/uniffi-bindgen-cs --tag v0.8.0+v0.25.0
+cargo install uniffi-bindgen-cs --git https://github.com/NordSecurity/uniffi-bindgen-cs --tag v0.9.1+v0.28.3
 ```
 
 Build the Nuget package for your platform:
