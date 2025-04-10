@@ -9,8 +9,8 @@ edition = "2021"
 crate-type = ["lib", "cdylib", "staticlib"]
 
 [dependencies]
-qsc = { git = "https://github.com/microsoft/qsharp.git", tag = "v1.13" }
-resource_estimator = { git = "https://github.com/microsoft/qsharp.git", tag = "v1.13" }
+qsc = { git = "https://github.com/microsoft/qsharp.git", tag = "v1.15.0" }
+resource_estimator = { git = "https://github.com/microsoft/qsharp.git", tag = "v1.15.0" }
 thiserror = "1.0"
 num-bigint = "0.4.5"
 num-complex = "0.4"
