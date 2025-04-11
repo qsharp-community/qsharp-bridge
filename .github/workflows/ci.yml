@@ -18,7 +18,7 @@ jobs:
 
       - name: Install uniffi-bindgen-cs
         run: |
-          cargo install uniffi-bindgen-cs --git https://github.com/NordSecurity/uniffi-bindgen-cs --tag v0.2.0
+          cargo install uniffi-bindgen-cs --git https://github.com/NordSecurity/uniffi-bindgen-cs --tag v0.9.1+v0.28.3
 
       - name: Build Rust Library
         run: |
