@@ -13,12 +13,26 @@ jobs:
   build-wheels:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest, windows-11-arm]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         
+      - name: Install Rust on Windows ARM
+        if: matrix.os == 'windows-11-arm'
+        shell: powershell
+        run: |
+          Invoke-WebRequest -Uri https://win.rustup.rs/aarch64 -OutFile rustup-init.exe
+          ./rustup-init.exe -y
+          $env:Path += ";$env:USERPROFILE\.cargo\bin"
+          echo "$env:USERPROFILE\.cargo\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - uses: actions/setup-python@v5
+        if: matrix.os == 'windows-11-arm'
+        with:
+          python-version: '3.13' 
+
       - name: Set version from tag
         id: get_version
         run: |
