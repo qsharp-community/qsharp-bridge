@@ -19,7 +19,6 @@ VERSION = os.environ.get("PACKAGE_VERSION", "0.1.0")
 def get_lib_filename():
     """
     Return the platform-specific filename for the shared library.
-    For Windows, select the binary based on the machine architecture.
     """
     machine = platform.machine().lower()
     if sys.platform.startswith("darwin"):
@@ -28,13 +27,7 @@ def get_lib_filename():
     elif sys.platform.startswith("linux"):
         return "libqsharp_bridge.so"
     elif sys.platform.startswith("win"):
-        # what an ambition, arm64 Windows support. maybe it will work?
-        if machine in ("amd64", "x86_64"):
-            return "qsharp_bridge.dll"
-        elif machine in ("arm64", "aarch64"):
-            return "qsharp_bridge_arm64.dll"
-        else:
-            return "qsharp_bridge.dll"
+        return "qsharp_bridge.dll"
     else:
         raise RuntimeError(f"Unsupported platform: {sys.platform}")
 
@@ -68,14 +61,16 @@ if _bdist_wheel:
     class bdist_wheel(_bdist_wheel):
         def finalize_options(self):
             self.plat_name_supplied = True
-            
-            # Set the platform tag based on the system
             if sys.platform.startswith('linux'):
                 self.plat_name = "py3-none-linux_x86_64"
             elif sys.platform.startswith('darwin'):
                 self.plat_name = "py3-none-macosx_11_0_universal2"
             elif sys.platform.startswith('win'):
-                self.plat_name = "py3-none-win_amd64"
+                machine = platform.machine().lower()
+                if machine in ("arm64", "aarch64"):
+                    self.plat_name = "py3-none-win_arm64"
+                else:
+                    self.plat_name = "py3-none-win_amd64"
             else:
                 # Fall back to default behavior for unknown platforms
                 self.plat_name_supplied = False
