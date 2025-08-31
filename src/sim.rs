@@ -13,16 +13,35 @@ use crate::qasm::{Qasm2Backend, QasmGenerationOptions};
 
 pub struct ExecutionOptions {
     pub shots: u32,
-    pub noise: PauliDistribution,
+    pub noise: Noise,
 }
 
-pub struct PauliDistribution {
+pub enum Noise {
+    Pauli { noise: PauliNoiseDistribution },
+    BitFlip { p: f64 },
+    PhaseFlip { p: f64 },
+    Depolarizing { p: f64 },
+}
+
+impl Noise {
+    pub fn to_distribution(&self) -> Result<PauliNoiseDistribution, QsError> {
+        match self {
+            Noise::Pauli { noise } => Ok(noise.clone()),
+            Noise::BitFlip { p } => PauliNoiseDistribution::new(*p, 0.0, 0.0),
+            Noise::PhaseFlip { p } => PauliNoiseDistribution::new(0.0, 0.0, *p),
+            Noise::Depolarizing { p } => PauliNoiseDistribution::new(*p / 3.0, *p / 3.0, *p / 3.0),
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct PauliNoiseDistribution {
     pub x: f64,
     pub y: f64,
     pub z: f64,
 }
 
-impl PauliDistribution {
+impl PauliNoiseDistribution {
     pub fn new(x: f64, y: f64, z: f64) -> Result<Self, QsError> {
         if x < 0.0 || y < 0.0 || z < 0.0 || x + y + z > 1.0 {
             return Err(QsError::ErrorMessage { error_text: "Invalid Pauli distribution: values must be non-negative and sum to <= 1.0".to_string() });
@@ -33,7 +52,7 @@ impl PauliDistribution {
 
 
 impl ExecutionOptions {
-    pub fn new(shots: u32, noise: PauliDistribution) -> Self {
+    pub fn new(shots: u32, noise: Noise) -> Self {
         Self { shots, noise }
     }
 
@@ -44,7 +63,7 @@ impl ExecutionOptions {
         }
     }
 
-    pub fn from_noise(noise: PauliDistribution) -> Self {
+    pub fn from_noise(noise: Noise) -> Self {
         Self {
             noise,
             ..Default::default()
@@ -56,7 +75,7 @@ impl Default for ExecutionOptions {
     fn default() -> Self {
         Self {
             shots: 1,
-            noise: PauliDistribution::new(0.0, 0.0, 0.0).unwrap(),
+            noise: Noise::Pauli { noise: PauliNoiseDistribution::new(0.0, 0.0, 0.0).unwrap() },
         }
     }
 }
@@ -73,10 +92,11 @@ pub fn run_qs_with_options(source: &str, options: Arc<ExecutionOptions>) -> Resu
     let mut results: Vec<ExecutionState> = Vec::new();
     let mut interpreter = create_interpreter(Some(source), PackageType::Exe, TargetCapabilityFlags::all())?;
 
-    let mut sim = if options.noise.x == 0.0 && options.noise.y == 0.0 && options.noise.z == 0.0 {
+    let noise_probabilities = options.noise.to_distribution()?;
+    let mut sim = if noise_probabilities.x == 0.0 && noise_probabilities.y == 0.0 && noise_probabilities.z == 0.0 {
         SparseSim::new() //default
     } else {
-        let noise = PauliNoise::from_probabilities(options.noise.x, options.noise.y, options.noise.z).map_err(|error| QsError::ErrorMessage { error_text: error })?;
+        let noise = PauliNoise::from_probabilities(noise_probabilities.x, noise_probabilities.y, noise_probabilities.z).map_err(|error| QsError::ErrorMessage { error_text: error })?;
         SparseSim::new_with_noise(&noise)
     };
 

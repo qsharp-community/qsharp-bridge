@@ -33,20 +33,28 @@ enum QasmResetBehavior {
     "Error"
 };
 
-dictionary PauliDistribution {
+[Enum]
+interface Noise {
+    Pauli(PauliNoiseDistribution noise);
+    BitFlip(f64 p);
+    PhaseFlip(f64 p);
+    Depolarizing(f64 p);
+};
+
+dictionary PauliNoiseDistribution {
     f64 x;
     f64 y;
     f64 z;
 };
 
 interface ExecutionOptions {
-    constructor(u32 shots, PauliDistribution noise);
+    constructor(u32 shots, Noise noise);
     
     [Name=from_shots]
     constructor(u32 shots);
 
     [Name=from_noise]
-    constructor(PauliDistribution noise);
+    constructor(Noise noise);
 };
 
 [Error]
