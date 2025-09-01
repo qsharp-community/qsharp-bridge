@@ -9,7 +9,6 @@ use qsc::interpret::output::Receiver;
 use qsc::interpret::output;
 use qsc::{format_state_id, LanguageFeatures, PackageType, PauliNoise, SourceMap, SparseSim, TargetCapabilityFlags};
 
-use crate::circuit::Circuit;
 use crate::qasm::{Qasm2Backend, QasmGenerationOptions};
 
 pub struct ExecutionOptions {
@@ -60,14 +59,6 @@ impl Default for ExecutionOptions {
             noise: PauliDistribution::new(0.0, 0.0, 0.0).unwrap(),
         }
     }
-}
-
-pub fn circuit(source: &str) -> Result<Circuit, QsError> {
-    let mut interpreter = create_interpreter(Some(source), PackageType::Exe, TargetCapabilityFlags::all())?;
-    let mut rec = ExecutionState::default();
-    let _ = interpreter.eval_entry(&mut rec)?;
-    let result = interpreter.get_circuit();
-    return Ok(result.into());
 }
 
 pub fn run_qs(source: &str) -> Result<ExecutionState, QsError> {
