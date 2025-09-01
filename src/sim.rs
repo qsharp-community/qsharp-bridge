@@ -9,51 +9,19 @@ use qsc::interpret::output::Receiver;
 use qsc::interpret::output;
 use qsc::{format_state_id, LanguageFeatures, PackageType, PauliNoise, SourceMap, SparseSim, TargetCapabilityFlags};
 
+use crate::noise::{Noise, PauliNoiseDistribution};
 use crate::qasm::{Qasm2Backend, QasmGenerationOptions};
 
 pub struct ExecutionOptions {
     pub shots: u32,
     pub noise: Noise,
-}
-
-pub enum Noise {
-    Pauli { noise: PauliNoiseDistribution },
-    BitFlip { p: f64 },
-    PhaseFlip { p: f64 },
-    Depolarizing { p: f64 },
-}
-
-impl Noise {
-    pub fn to_distribution(&self) -> Result<PauliNoiseDistribution, QsError> {
-        match self {
-            Noise::Pauli { noise } => Ok(noise.clone()),
-            Noise::BitFlip { p } => PauliNoiseDistribution::new(*p, 0.0, 0.0),
-            Noise::PhaseFlip { p } => PauliNoiseDistribution::new(0.0, 0.0, *p),
-            Noise::Depolarizing { p } => PauliNoiseDistribution::new(*p / 3.0, *p / 3.0, *p / 3.0),
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct PauliNoiseDistribution {
-    pub x: f64,
-    pub y: f64,
-    pub z: f64,
-}
-
-impl PauliNoiseDistribution {
-    pub fn new(x: f64, y: f64, z: f64) -> Result<Self, QsError> {
-        if x < 0.0 || y < 0.0 || z < 0.0 || x + y + z > 1.0 {
-            return Err(QsError::ErrorMessage { error_text: "Invalid Pauli distribution: values must be non-negative and sum to <= 1.0".to_string() });
-        }
-        Ok(Self { x, y, z })
-    }
+    pub qubit_loss: Option<f64>,
 }
 
 
 impl ExecutionOptions {
-    pub fn new(shots: u32, noise: Noise) -> Self {
-        Self { shots, noise }
+    pub fn new(shots: u32, noise: Noise, qubit_loss: Option<f64>) -> Self {
+        Self { shots, noise, qubit_loss }
     }
 
     pub fn from_shots(shots: u32) -> Self {
@@ -69,6 +37,13 @@ impl ExecutionOptions {
             ..Default::default()
         }
     }
+
+    pub fn from_qubit_loss(qubit_loss: f64) -> Self {
+        Self {
+            qubit_loss: Some(qubit_loss),
+            ..Default::default()
+        }
+    }
 }
 
 impl Default for ExecutionOptions {
@@ -76,6 +51,7 @@ impl Default for ExecutionOptions {
         Self {
             shots: 1,
             noise: Noise::Pauli { noise: PauliNoiseDistribution::new(0.0, 0.0, 0.0).unwrap() },
+            qubit_loss: None,
         }
     }
 }
@@ -99,6 +75,10 @@ pub fn run_qs_with_options(source: &str, options: Arc<ExecutionOptions>) -> Resu
         let noise = PauliNoise::from_probabilities(noise_probabilities.x, noise_probabilities.y, noise_probabilities.z).map_err(|error| QsError::ErrorMessage { error_text: error })?;
         SparseSim::new_with_noise(&noise)
     };
+
+    if let Some(qubit_loss) = options.qubit_loss {
+        sim.set_loss(qubit_loss);
+    }
 
     let shots = options.shots;
     for _ in 0..shots {

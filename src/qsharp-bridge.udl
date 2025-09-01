@@ -35,6 +35,7 @@ enum QasmResetBehavior {
 
 [Enum]
 interface Noise {
+    Ideal();
     Pauli(PauliNoiseDistribution noise);
     BitFlip(f64 p);
     PhaseFlip(f64 p);
@@ -48,13 +49,16 @@ dictionary PauliNoiseDistribution {
 };
 
 interface ExecutionOptions {
-    constructor(u32 shots, Noise noise);
+    constructor(u32 shots, Noise noise, f64? qubit_loss);
     
     [Name=from_shots]
     constructor(u32 shots);
 
     [Name=from_noise]
     constructor(Noise noise);
+
+    [Name=from_qubit_loss]
+    constructor(f64 qubit_loss);
 };
 
 [Error]

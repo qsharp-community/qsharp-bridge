@@ -11,10 +11,11 @@ use crate::sim::ExecutionState;
 use crate::sim::QsError;
 use crate::sim::QubitState;
 use crate::sim::ExecutionOptions;
-use crate::sim::Noise;
-use crate::sim::PauliNoiseDistribution;
+use crate::noise::Noise;
+use crate::noise::PauliNoiseDistribution;
 use crate::qasm::QasmGenerationOptions;
 use crate::qasm::QasmResetBehavior;
 
 pub mod sim;
 pub mod qasm;
+pub mod noise;
