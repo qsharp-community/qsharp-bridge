@@ -100,3 +100,23 @@ fn test_teleportation_shots() {
         assert_eq!(inner_result.result, Some("true".into()));
     }
 }
+
+#[test]
+fn test_full_loss() {
+    let source = std::fs::read_to_string("tests/assets/loss_single_qubit.qs").unwrap();
+    let options = ExecutionOptions::from_qubit_loss(1.0);
+    let result = run_qs_with_options(&source, Arc::new(options)).unwrap();
+
+    assert_eq!(result.len(), 1);
+    assert_eq!(result[0].result, Some("true".into()));
+}
+
+#[test]
+fn test_no_loss() {
+    let source = std::fs::read_to_string("tests/assets/loss_single_qubit.qs").unwrap();
+    let options = ExecutionOptions::from_qubit_loss(0.0);
+    let result = run_qs_with_options(&source, Arc::new(options)).unwrap();
+
+    assert_eq!(result.len(), 1);
+    assert_eq!(result[0].result, Some("false".into()));
+}
