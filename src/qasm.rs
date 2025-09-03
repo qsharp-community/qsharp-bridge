@@ -1,7 +1,33 @@
 use std::collections::HashSet;
 use num_bigint::BigUint;
 use num_complex::Complex;
-use qsc::{interpret::Value, Backend};
+use qsc::{interpret::{GenericReceiver, Value}, Backend, PackageType, TargetCapabilityFlags};
+
+use crate::sim::{create_interpreter, QsError};
+
+pub fn qasm2(source: &str, generation_options: QasmGenerationOptions) -> Result<String, QsError> {
+    let mut stdout = vec![];
+    let mut out = GenericReceiver::new(&mut stdout);
+    let mut backend = Qasm2Backend::new(generation_options);
+
+    let mut interpreter = create_interpreter(Some(source), PackageType::Exe, TargetCapabilityFlags::empty())?;
+    let _ = interpreter.eval_entry_with_sim(&mut backend, &mut out)?;
+
+    let qasm = backend.get_qasm().map_err(|errors| QsError::ErrorMessage { error_text: errors.join(", ") })?;
+    Ok(qasm)
+}
+
+pub fn qasm2_expression(expression: &str, generation_options: QasmGenerationOptions) -> Result<String, QsError> {
+    let mut stdout = vec![];
+    let mut out = GenericReceiver::new(&mut stdout);
+    let mut backend = Qasm2Backend::new(generation_options);
+
+    let mut interpreter = create_interpreter(None, PackageType::Lib, TargetCapabilityFlags::empty())?;
+    let _ = interpreter.run_with_sim(&mut backend, &mut out, Some(expression))?;
+
+    let qasm = backend.get_qasm().map_err(|errors| QsError::ErrorMessage { error_text: errors.join(", ") })?;
+    Ok(qasm)
+}
 
 pub(crate) struct Qasm2Backend {
     code: Vec<String>,

@@ -1,4 +1,4 @@
-use qsharp_bridge::{qasm::{QasmGenerationOptions, QasmResetBehavior}, sim::{qasm2, qasm2_expression}};
+use qsharp_bridge::{qasm::{qasm2, qasm2_expression, QasmGenerationOptions, QasmResetBehavior}};
 
 #[test]
 fn test_qasm_entanglement() {
