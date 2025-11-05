@@ -9,8 +9,8 @@ edition = "2024"
 crate-type = ["lib", "cdylib", "staticlib"]
 
 [dependencies]
-qsc = { git = "https://github.com/microsoft/qdk.git", tag = "v1.21.0" }
-resource_estimator = { git = "https://github.com/microsoft/qdk.git", tag = "v1.21.0" }
+qsc = { git = "https://github.com/microsoft/qdk.git", tag = "v1.22.0" }
+resource_estimator = { git = "https://github.com/microsoft/qdk.git", tag = "v1.22.0" }
 thiserror = "1.0"
 num-bigint = "0.4.5"
 num-complex = "0.4"
