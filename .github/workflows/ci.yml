@@ -57,7 +57,7 @@ jobs:
           path: platforms/python/qsharp-bridge/dist/*.whl
 
   build-swift:
-    runs-on: macos-15
+    runs-on: macos-latest
 
     steps:
       - name: Checkout code
