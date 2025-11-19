@@ -19,3 +19,4 @@ use crate::sim::run_qs_with_options;
 pub mod noise;
 pub mod qasm;
 pub mod sim;
+pub mod quantikz;
