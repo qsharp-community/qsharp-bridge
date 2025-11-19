@@ -85,8 +85,6 @@ impl Qasm2Backend {
 }
 
 impl Backend for Qasm2Backend {
-    type ResultType = bool;
-
     fn qubit_allocate(&mut self) -> usize {
         let q = self.next_qubit_id;
         self.next_qubit_id += 1;
@@ -160,31 +158,31 @@ impl Backend for Qasm2Backend {
             .push(format!("ccx q[{}], q[{}], q[{}];", ctl0, ctl1, q));
     }
 
-    fn m(&mut self, q: usize) -> Self::ResultType {
+    fn m(&mut self, q: usize) -> qsc_eval::val::Result {
         let c = self.cbit_counter;
         self.cbit_counter += 1;
         self.code.push(format!("measure q[{}] -> c[{}];", q, c));
-        false
+        qsc_eval::val::Result::Val(false)
     }
 
-    fn mresetz(&mut self, q: usize) -> Self::ResultType {
+    fn mresetz(&mut self, q: usize) -> qsc_eval::val::Result {
         match self.generation_options.reset_behavior {
             QasmResetBehavior::Supported => {
                 let c = self.cbit_counter;
                 self.cbit_counter += 1;
                 self.code.push(format!("measure q[{}] -> c[{}];", q, c));
                 self.code.push(format!("reset q[{}];", q));
-                false
+                qsc_eval::val::Result::Val(false)
             }
             QasmResetBehavior::Ignored => {
                 let c = self.cbit_counter;
                 self.cbit_counter += 1;
                 self.code.push(format!("measure q[{}] -> c[{}];", q, c));
-                false
+                qsc_eval::val::Result::Val(false)
             }
             QasmResetBehavior::Error => {
                 self.errors.push("Reset is not supported".to_string());
-                false
+                qsc_eval::val::Result::Val(false)
             }
         }
     }

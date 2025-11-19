@@ -14,7 +14,7 @@ dependencies = [
 [[package]]
 name = "allocator"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "mimalloc-sys",
 ]
@@ -523,7 +523,7 @@ checksum = "8355be11b20d696c8f18f6cc018c4e372165b1fa8126cef092399c9951984ffa"
 [[package]]
 name = "library"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 
 [[package]]
 name = "linux-raw-sys"
@@ -581,7 +581,7 @@ dependencies = [
 [[package]]
 name = "mimalloc-sys"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "cc",
 ]
@@ -719,7 +719,7 @@ dependencies = [
 [[package]]
 name = "qdk_simulators"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "quantum-sparse-sim",
 ]
@@ -727,7 +727,7 @@ dependencies = [
 [[package]]
 name = "qsc"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "allocator",
  "env_logger",
@@ -760,7 +760,7 @@ dependencies = [
 [[package]]
 name = "qsc_ast"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "indenter",
  "miette",
@@ -771,7 +771,7 @@ dependencies = [
 [[package]]
 name = "qsc_circuit"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "log",
  "miette",
@@ -783,6 +783,7 @@ dependencies = [
  "qsc_fir",
  "qsc_frontend",
  "qsc_hir",
+ "qsc_lowerer",
  "regex-lite",
  "rustc-hash 1.1.0",
  "serde",
@@ -793,7 +794,7 @@ dependencies = [
 [[package]]
 name = "qsc_codegen"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "num-bigint",
  "num-complex",
@@ -814,7 +815,7 @@ dependencies = [
 [[package]]
 name = "qsc_data_structures"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "bitflags",
  "miette",
@@ -825,7 +826,7 @@ dependencies = [
 [[package]]
 name = "qsc_doc_gen"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "qsc_ast",
  "qsc_data_structures",
@@ -838,7 +839,7 @@ dependencies = [
 [[package]]
 name = "qsc_eval"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "miette",
  "ndarray",
@@ -858,7 +859,7 @@ dependencies = [
 [[package]]
 name = "qsc_fir"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "indenter",
  "num-bigint",
@@ -869,7 +870,7 @@ dependencies = [
 [[package]]
 name = "qsc_formatter"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "clap",
  "qsc_data_structures",
@@ -879,7 +880,7 @@ dependencies = [
 [[package]]
 name = "qsc_frontend"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "library",
  "miette",
@@ -894,7 +895,7 @@ dependencies = [
 [[package]]
 name = "qsc_hir"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "indenter",
  "num-bigint",
@@ -905,7 +906,7 @@ dependencies = [
 [[package]]
 name = "qsc_linter"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "miette",
  "qsc_ast",
@@ -921,7 +922,7 @@ dependencies = [
 [[package]]
 name = "qsc_lowerer"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "qsc_data_structures",
  "qsc_fir",
@@ -931,7 +932,7 @@ dependencies = [
 [[package]]
 name = "qsc_parse"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "bitflags",
  "enum-iterator",
@@ -946,7 +947,7 @@ dependencies = [
 [[package]]
 name = "qsc_partial_eval"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "miette",
  "num-bigint",
@@ -964,7 +965,7 @@ dependencies = [
 [[package]]
 name = "qsc_passes"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "miette",
  "qsc_data_structures",
@@ -981,7 +982,7 @@ dependencies = [
 [[package]]
 name = "qsc_project"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "async-trait",
  "futures",
@@ -1002,7 +1003,7 @@ dependencies = [
 [[package]]
 name = "qsc_qasm"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "bitflags",
  "enum-iterator",
@@ -1023,7 +1024,7 @@ dependencies = [
 [[package]]
 name = "qsc_rca"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "bitflags",
  "indenter",
@@ -1039,7 +1040,7 @@ dependencies = [
 [[package]]
 name = "qsc_rir"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "indenter",
  "qsc_data_structures",
@@ -1053,6 +1054,8 @@ dependencies = [
  "num-bigint",
  "num-complex",
  "qsc",
+ "qsc_circuit",
+ "qsc_eval",
  "resource_estimator",
  "serde",
  "serde_json",
@@ -1170,7 +1173,7 @@ checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 [[package]]
 name = "resource_estimator"
 version = "0.0.0"
-source = "git+https://github.com/microsoft/qdk.git?tag=v1.22.0#2095df676ba8c5a504dd2fd35eb149c8872cbd9f"
+source = "git+https://github.com/microsoft/qdk.git?branch=main#c1ca1a247cd0a9687a9fa0fbd08ff72ef5f451aa"
 dependencies = [
  "fasteval",
  "miette",
