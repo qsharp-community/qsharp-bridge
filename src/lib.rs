@@ -15,6 +15,7 @@ use crate::sim::estimate_expression;
 use crate::sim::qir;
 use crate::sim::run_qs;
 use crate::sim::run_qs_with_options;
+use crate::quantikz::quantikz;
 
 pub mod noise;
 pub mod qasm;

@@ -1,41 +1,9 @@
-use qsc::{
-    LanguageFeatures, PackageType, SourceMap, interpret::{CircuitEntryPoint, CircuitGenerationMethod, Interpreter}, target::Profile
-};
 use expect_test::expect;
-use qsc_circuit::TracerConfig;
-use qsharp_bridge::quantikz;
-
-fn interpreter_with_circuit_trace(code: &str, profile: Profile) -> Interpreter {
-    let sources = SourceMap::new([("test.qs".into(), code.into())], None);
-    let (std_id, store) = qsc::compile::package_store_with_stdlib(profile.into());
-    Interpreter::with_circuit_trace(
-        sources,
-        PackageType::Exe,
-        profile.into(),
-        LanguageFeatures::default(),
-        store,
-        &[(std_id, None)],
-        Default::default(),
-    )
-    .expect("interpreter creation should succeed")
-}
-
-fn get_quantikz(
-    interpreter: &mut Interpreter,
-    entry: CircuitEntryPoint,
-    method: CircuitGenerationMethod,
-    config: TracerConfig,
-) -> String {
-    let circuit = interpreter
-        .circuit(entry, method, config)
-        .expect("circuit generation should succeed");
-
-    quantikz::circuit_to_quantikz(&circuit)
-}
+use qsharp_bridge::quantikz::quantikz;
 
 #[test]
 fn quantikz_one_gate() {
-    let mut interpreter = interpreter_with_circuit_trace(
+    let tex = quantikz(
         r"
             namespace Test {
                 @EntryPoint()
@@ -45,16 +13,8 @@ fn quantikz_one_gate() {
                     M(q);
                 }
             }
-        ",
-        Profile::Unrestricted,
-    );
-
-    let tex = get_quantikz(
-        &mut interpreter,
-        CircuitEntryPoint::EntryPoint,
-        CircuitGenerationMethod::ClassicalEval,
-        TracerConfig::default(),
-    );
+        "
+    ).expect("quantikz generation should succeed");
 
     expect![[r#"
         \begin{quantikz}
@@ -67,7 +27,7 @@ fn quantikz_one_gate() {
 
 #[test]
 fn quantikz_toffoli() {
-    let mut interpreter = interpreter_with_circuit_trace(
+    let tex = quantikz(
         r"
             namespace Test {
                 @EntryPoint()
@@ -76,16 +36,8 @@ fn quantikz_toffoli() {
                     CCNOT(q[0], q[1], q[2]);
                 }
             }
-        ",
-        Profile::Unrestricted,
-    );
-
-    let tex = get_quantikz(
-        &mut interpreter,
-        CircuitEntryPoint::EntryPoint,
-        CircuitGenerationMethod::ClassicalEval,
-        TracerConfig::default(),
-    );
+        "
+    ).expect("quantikz generation should succeed");
 
     expect![[r#"
         \begin{quantikz}
@@ -99,7 +51,7 @@ fn quantikz_toffoli() {
 
 #[test]
 fn quantikz_swap_gate() {
-    let mut interpreter = interpreter_with_circuit_trace(
+    let tex = quantikz(
         r"
             namespace Test {
                 @EntryPoint()
@@ -108,16 +60,8 @@ fn quantikz_swap_gate() {
                     SWAP(q[0], q[1]);
                 }
             }
-        ",
-        Profile::Unrestricted,
-    );
-
-    let tex = get_quantikz(
-        &mut interpreter,
-        CircuitEntryPoint::EntryPoint,
-        CircuitGenerationMethod::ClassicalEval,
-        TracerConfig::default(),
-    );
+        "
+    ).expect("quantikz generation should succeed");
 
     expect![[r#"
         \begin{quantikz}
@@ -131,7 +75,7 @@ fn quantikz_swap_gate() {
 
 #[test]
 fn quantikz_complex_sample() {
-    let mut interpreter = interpreter_with_circuit_trace(
+    let tex = quantikz(
         r#"
             namespace Test {
                 @EntryPoint()
@@ -149,16 +93,8 @@ fn quantikz_complex_sample() {
                     let r2 = M(q2);
                 }
             }
-        "#,
-        Profile::Unrestricted,
-    );
-
-    let tex = get_quantikz(
-        &mut interpreter,
-        CircuitEntryPoint::EntryPoint,
-        CircuitGenerationMethod::ClassicalEval,
-        TracerConfig::default(),
-    );
+        "#
+    ).expect("quantikz generation should succeed");
 
     expect![[r#"
         \begin{quantikz}
@@ -174,7 +110,7 @@ fn quantikz_complex_sample() {
 
 #[test]
 fn quantikz_rotation_circuit() {
-    let mut interpreter = interpreter_with_circuit_trace(
+    let tex = quantikz(
         r#"
             namespace Test {
                 open Microsoft.Quantum.Math;
@@ -192,16 +128,8 @@ fn quantikz_rotation_circuit() {
                     M(q1);
                 }
             }
-        "#,
-        Profile::Unrestricted,
-    );
-
-    let tex = get_quantikz(
-        &mut interpreter,
-        CircuitEntryPoint::EntryPoint,
-        CircuitGenerationMethod::ClassicalEval,
-        TracerConfig::default(),
-    );
+        "#
+    ).expect("quantikz generation should succeed");
 
     expect![[r#"
         \begin{quantikz}
@@ -216,7 +144,7 @@ fn quantikz_rotation_circuit() {
 
 #[test]
 fn quantikz_cat_state() {
-    let mut interpreter = interpreter_with_circuit_trace(
+    let tex = quantikz(
         r"
             namespace Test {
                 import Std.Measurement.*;
@@ -236,16 +164,8 @@ fn quantikz_cat_state() {
                     MResetEachZ(qubits)
                 }
             }
-        ",
-        Profile::Unrestricted,
-    );
-
-    let tex = get_quantikz(
-        &mut interpreter,
-        CircuitEntryPoint::EntryPoint,
-        CircuitGenerationMethod::ClassicalEval,
-        TracerConfig::default(),
-    );
+        "
+    ).expect("quantikz generation should succeed");
 
     expect![[r#"
         \begin{quantikz}

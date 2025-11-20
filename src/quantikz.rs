@@ -1,5 +1,11 @@
-use qsc_circuit::{Circuit, Operation};
+use qsc::{
+    LanguageFeatures, PackageType, SourceMap,
+    interpret::{CircuitEntryPoint, CircuitGenerationMethod, Interpreter}, target::Profile,
+};
+use qsc_circuit::{Circuit, Operation, TracerConfig};
 use std::collections::{HashMap, HashSet};
+
+use crate::sim::QsError;
 
 type RegisterMap = HashMap<(usize, Option<usize>), usize>;
 
@@ -7,6 +13,35 @@ type RegisterMap = HashMap<(usize, Option<usize>), usize>;
 struct Row {
     label: Option<String>,
     is_classical: bool,
+}
+
+pub fn quantikz(code: &str) -> Result<String, QsError> {
+    let sources = SourceMap::new([("test.qs".into(), code.into())], None);
+    let (std_id, store) = qsc::compile::package_store_with_stdlib(Profile::Unrestricted.into());
+
+    let mut interpreter = match Interpreter::with_circuit_trace(
+        sources,
+        PackageType::Exe,
+        Profile::Unrestricted.into(),
+        LanguageFeatures::default(),
+        store,
+        &[(std_id, None)],
+        Default::default(),
+    ) {
+        Ok(interpreter) => interpreter,
+        Err(errors) => {
+            return Err(errors.into());
+        }
+    };
+
+    let circuit = interpreter
+        .circuit(
+            CircuitEntryPoint::EntryPoint,
+            CircuitGenerationMethod::ClassicalEval,
+            TracerConfig::default(),
+        )?;
+
+    Ok(circuit_to_quantikz(&circuit))
 }
 
 pub fn circuit_to_quantikz(c: &Circuit) -> String {
