@@ -3,7 +3,7 @@ use qsc::{
     interpret::{CircuitEntryPoint, CircuitGenerationMethod, Interpreter}, target::Profile,
 };
 use qsc_circuit::{Circuit, Operation, TracerConfig};
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use crate::sim::QsError;
 
@@ -12,7 +12,7 @@ type RegisterMap = HashMap<(usize, Option<usize>), usize>;
 #[derive(Clone)]
 struct Row {
     label: Option<String>,
-    is_classical: bool,
+    is_classical: bool, 
 }
 
 pub fn quantikz(code: &str) -> Result<String, QsError> {
@@ -57,55 +57,25 @@ pub fn circuit_to_quantikz(c: &Circuit) -> String {
 fn build_rows(c: &Circuit) -> (Vec<Row>, RegisterMap) {
     let mut rows: Vec<Row> = Vec::new();
     let mut register_to_row = HashMap::new();
-    let qubits_with_gap_row_below = identify_gaps(c);
 
     for q in &c.qubits {
-        let label = format!("\\lstick{{\\ket{{0}}_{{{}}}}}", q.id);
-        register_to_row.insert((q.id, None), rows.len());
+        let label = format!("\\lstick{{$\\ket{{0}}_{{{}}}$}}", q.id);
+        let row_idx = rows.len();
+        
+        // Map the Qubit ID to this row
+        register_to_row.insert((q.id, None), row_idx);
+
+        // Map all result registers associated with this qubit to the SAME row.
+        for i in 0..q.num_results {
+             register_to_row.insert((q.id, Some(i)), row_idx);
+        }
+
         rows.push(Row {
             label: Some(label),
             is_classical: false,
         });
-
-        let extra_rows = if qubits_with_gap_row_below.contains(&q.id) {
-            std::cmp::max(1, q.num_results)
-        } else {
-            q.num_results
-        };
-
-        for i in 0..extra_rows {
-            register_to_row.insert((q.id, Some(i)), rows.len());
-            rows.push(Row {
-                label: None,
-                is_classical: true,
-            });
-        }
     }
     (rows, register_to_row)
-}
-
-fn identify_gaps(c: &Circuit) -> HashSet<usize> {
-    let mut gaps = HashSet::new();
-    for col in &c.component_grid {
-        for op in &col.components {
-            let targets = match op {
-                Operation::Measurement(m) => &m.qubits,
-                Operation::Unitary(u) => &u.targets,
-                Operation::Ket(k) => &k.targets,
-            };
-            for target in targets {
-                let q = target.qubit;
-                if gaps.contains(&q) {
-                    continue;
-                }
-                let next_q = q + 1;
-                if targets.iter().any(|t| t.qubit == next_q) {
-                    gaps.insert(q);
-                }
-            }
-        }
-    }
-    gaps
 }
 
 fn initialize_table(row_count: usize, col_count: usize, rows: &[Row]) -> Vec<Vec<String>> {
@@ -131,7 +101,8 @@ fn populate_table(
     for (col_index, col) in c.component_grid.iter().enumerate() {
         let table_col = col_index;
         for op in &col.components {
-            let targets = get_rows_for_operation(op, register_to_row, true);
+            // For measurements, we want to draw on the qubit line, so we treat qubits as targets for visual placement
+            let targets = get_rows_for_operation(op, register_to_row, true); 
             let controls = get_rows_for_operation(op, register_to_row, false);
 
             process_operation(op, table_col, &targets, &controls, table, rows);
@@ -163,6 +134,7 @@ fn process_operation(
             for &t in targets {
                 table[t][col] = String::from("\\meter{}");
                 rows[t].is_classical = true;
+                // Switch the rest of the wire to classical
                 for next_c in (col + 1)..table[t].len() {
                     table[t][next_c] = String::from("\\cw");
                 }
@@ -172,6 +144,7 @@ fn process_operation(
             for &t in targets {
                 table[t][col] = String::from("\\gate{\\ket{0}}");
                 rows[t].is_classical = false;
+                // Switch the rest of the wire back to quantum
                 for next_c in (col + 1)..table[t].len() {
                     table[t][next_c] = String::from("\\qw");
                 }
@@ -279,9 +252,9 @@ fn get_rows_for_operation(
     let registers = match op {
         Operation::Measurement(m) => {
             if is_target {
-                &m.results
-            } else {
                 &m.qubits
+            } else {
+                &m.qubits 
             }
         }
         Operation::Unitary(u) => {
@@ -306,5 +279,6 @@ fn get_rows_for_operation(
         .collect();
 
     rows.sort();
+    rows.dedup(); // Remove duplicates if result/qubit mapped to same row
     rows
 }

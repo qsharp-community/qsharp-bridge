@@ -18,8 +18,7 @@ fn quantikz_one_gate() {
 
     expect![[r#"
         \begin{quantikz}
-        \lstick{\ket{0}_{0}} & \gate{H} & \qw & \qw \\
-         & \cw & \meter{} & \cw \\
+        \lstick{$\ket{0}_{0}$} & \gate{H} & \meter{} & \cw \\
         \end{quantikz}
     "#]]
     .assert_eq(&tex);
@@ -41,9 +40,9 @@ fn quantikz_toffoli() {
 
     expect![[r#"
         \begin{quantikz}
-        \lstick{\ket{0}_{0}} & \ctrl{2} & \qw \\
-        \lstick{\ket{0}_{1}} & \ctrl{1} & \qw \\
-        \lstick{\ket{0}_{2}} & \targ{} & \qw \\
+        \lstick{$\ket{0}_{0}$} & \ctrl{2} & \qw \\
+        \lstick{$\ket{0}_{1}$} & \ctrl{1} & \qw \\
+        \lstick{$\ket{0}_{2}$} & \targ{} & \qw \\
         \end{quantikz}
     "#]]
     .assert_eq(&tex);
@@ -65,9 +64,8 @@ fn quantikz_swap_gate() {
 
     expect![[r#"
         \begin{quantikz}
-        \lstick{\ket{0}_{0}} & \swap{2} & \qw \\
-         & \cw & \cw \\
-        \lstick{\ket{0}_{1}} & \targX{} & \qw \\
+        \lstick{$\ket{0}_{0}$} & \swap{1} & \qw \\
+        \lstick{$\ket{0}_{1}$} & \targX{} & \qw \\
         \end{quantikz}
     "#]]
     .assert_eq(&tex);
@@ -98,12 +96,9 @@ fn quantikz_complex_sample() {
 
     expect![[r#"
         \begin{quantikz}
-        \lstick{\ket{0}_{0}} & \gate{R_z(0.3927)} & \qw & \qw & \qw & \qw & \qw & \ctrl{4} & \qw & \ctrl{4} & \gate{T} & \qw & \ctrl{2} & \qw & \ctrl{2} & \gate{H} & \swap{4} & \qw & \qw \\
-         & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \meter{} & \cw \\
-        \lstick{\ket{0}_{1}} & \gate{T} & \qw & \ctrl{2} & \qw & \ctrl{2} & \qw & \qw & \qw & \qw & \gate{H} & \gate{T} & \targ{} & \gate{T^\dagger} & \targ{} & \qw & \qw & \qw & \qw \\
-         & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \meter{} & \cw \\
-        \lstick{\ket{0}_{2}} & \gate{H} & \gate{T} & \targ{} & \gate{T^\dagger} & \targ{} & \gate{R_z(0.3927)} & \targ{} & \gate{R_z(-0.3927)} & \targ{} & \qw & \qw & \qw & \qw & \qw & \qw & \targX{} & \qw & \qw \\
-         & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \meter{} & \cw \\
+        \lstick{$\ket{0}_{0}$} & \gate{R_z(0.3927)} & \qw & \qw & \qw & \qw & \qw & \ctrl{2} & \qw & \ctrl{2} & \gate{T} & \qw & \ctrl{1} & \qw & \ctrl{1} & \gate{H} & \swap{2} & \meter{} & \cw \\
+        \lstick{$\ket{0}_{1}$} & \gate{T} & \qw & \ctrl{1} & \qw & \ctrl{1} & \qw & \qw & \qw & \qw & \gate{H} & \gate{T} & \targ{} & \gate{T^\dagger} & \targ{} & \qw & \qw & \meter{} & \cw \\
+        \lstick{$\ket{0}_{2}$} & \gate{H} & \gate{T} & \targ{} & \gate{T^\dagger} & \targ{} & \gate{R_z(0.3927)} & \targ{} & \gate{R_z(-0.3927)} & \targ{} & \qw & \qw & \qw & \qw & \qw & \qw & \targX{} & \meter{} & \cw \\
         \end{quantikz}
     "#]].assert_eq(&tex);
 }
@@ -133,10 +128,8 @@ fn quantikz_rotation_circuit() {
 
     expect![[r#"
         \begin{quantikz}
-        \lstick{\ket{0}_{0}} & \gate{X} & \gate{H} & \ctrl{2} & \gate{H} & \qw & \qw & \qw \\
-         & \cw & \cw & \cw & \cw & \meter{} & \cw & \cw \\
-        \lstick{\ket{0}_{1}} & \gate{X} & \qw & \targ{} & \gate{R_z(2.0944)} & \gate{H} & \qw & \qw \\
-         & \cw & \cw & \cw & \cw & \cw & \meter{} & \cw \\
+        \lstick{$\ket{0}_{0}$} & \gate{X} & \gate{H} & \ctrl{1} & \gate{H} & \meter{} & \cw & \cw \\
+        \lstick{$\ket{0}_{1}$} & \gate{X} & \qw & \targ{} & \gate{R_z(2.0944)} & \gate{H} & \meter{} & \cw \\
         \end{quantikz}
     "#]]
     .assert_eq(&tex);
@@ -169,22 +162,48 @@ fn quantikz_cat_state() {
 
     expect![[r#"
         \begin{quantikz}
-        \lstick{\ket{0}_{0}} & \gate{H} & \ctrl{2} & \ctrl{4} & \ctrl{6} & \ctrl{8} & \ctrl{10} & \ctrl{12} & \ctrl{14} & \qw & \gate{\ket{0}} & \qw \\
-         & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \meter{} & \cw & \cw \\
-        \lstick{\ket{0}_{1}} & \qw & \targ{} & \qw & \qw & \qw & \qw & \qw & \qw & \qw & \gate{\ket{0}} & \qw \\
-         & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \meter{} & \cw & \cw \\
-        \lstick{\ket{0}_{2}} & \qw & \qw & \targ{} & \qw & \qw & \qw & \qw & \qw & \qw & \gate{\ket{0}} & \qw \\
-         & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \meter{} & \cw & \cw \\
-        \lstick{\ket{0}_{3}} & \qw & \qw & \qw & \targ{} & \qw & \qw & \qw & \qw & \qw & \gate{\ket{0}} & \qw \\
-         & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \meter{} & \cw & \cw \\
-        \lstick{\ket{0}_{4}} & \qw & \qw & \qw & \qw & \targ{} & \qw & \qw & \qw & \qw & \gate{\ket{0}} & \qw \\
-         & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \meter{} & \cw & \cw \\
-        \lstick{\ket{0}_{5}} & \qw & \qw & \qw & \qw & \qw & \targ{} & \qw & \qw & \qw & \gate{\ket{0}} & \qw \\
-         & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \meter{} & \cw & \cw \\
-        \lstick{\ket{0}_{6}} & \qw & \qw & \qw & \qw & \qw & \qw & \targ{} & \qw & \qw & \gate{\ket{0}} & \qw \\
-         & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \meter{} & \cw & \cw \\
-        \lstick{\ket{0}_{7}} & \qw & \qw & \qw & \qw & \qw & \qw & \qw & \targ{} & \qw & \gate{\ket{0}} & \qw \\
-         & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \cw & \meter{} & \cw & \cw \\
+        \lstick{$\ket{0}_{0}$} & \gate{H} & \ctrl{1} & \ctrl{2} & \ctrl{3} & \ctrl{4} & \ctrl{5} & \ctrl{6} & \ctrl{7} & \meter{} & \gate{\ket{0}} & \qw \\
+        \lstick{$\ket{0}_{1}$} & \qw & \targ{} & \qw & \qw & \qw & \qw & \qw & \qw & \meter{} & \gate{\ket{0}} & \qw \\
+        \lstick{$\ket{0}_{2}$} & \qw & \qw & \targ{} & \qw & \qw & \qw & \qw & \qw & \meter{} & \gate{\ket{0}} & \qw \\
+        \lstick{$\ket{0}_{3}$} & \qw & \qw & \qw & \targ{} & \qw & \qw & \qw & \qw & \meter{} & \gate{\ket{0}} & \qw \\
+        \lstick{$\ket{0}_{4}$} & \qw & \qw & \qw & \qw & \targ{} & \qw & \qw & \qw & \meter{} & \gate{\ket{0}} & \qw \\
+        \lstick{$\ket{0}_{5}$} & \qw & \qw & \qw & \qw & \qw & \targ{} & \qw & \qw & \meter{} & \gate{\ket{0}} & \qw \\
+        \lstick{$\ket{0}_{6}$} & \qw & \qw & \qw & \qw & \qw & \qw & \targ{} & \qw & \meter{} & \gate{\ket{0}} & \qw \\
+        \lstick{$\ket{0}_{7}$} & \qw & \qw & \qw & \qw & \qw & \qw & \qw & \targ{} & \meter{} & \gate{\ket{0}} & \qw \\
+        \end{quantikz}
+    "#]]
+    .assert_eq(&tex);
+}
+
+#[test]
+fn quantikz_user_example() {
+    let tex = quantikz(
+        r"
+            namespace Test {
+                import Std.Measurement.*;
+                
+                @EntryPoint()
+                operation Run() : (Result, Result) {
+                    use (control, target) = (Qubit(), Qubit());
+                    PrepareBellState(control, target);
+                    
+                    let resultControl = MResetZ(control);
+                    let resultTarget = MResetZ(target);
+                    return (resultControl, resultTarget);
+                }
+
+                operation PrepareBellState(q1 : Qubit, q2: Qubit) : Unit {
+                    H(q1);
+                    CNOT(q1, q2);
+                }
+            }
+        "
+    ).expect("quantikz generation should succeed");
+
+    expect![[r#"
+        \begin{quantikz}
+        \lstick{$\ket{0}_{0}$} & \gate{H} & \ctrl{1} & \meter{} & \gate{\ket{0}} & \qw \\
+        \lstick{$\ket{0}_{1}$} & \qw & \targ{} & \meter{} & \gate{\ket{0}} & \qw \\
         \end{quantikz}
     "#]]
     .assert_eq(&tex);
