@@ -19,6 +19,9 @@ namespace qsharp_bridge {
     string quantikz([ByRef]string source);
 
     [Throws=QsError]
+    string quantikz_operation([ByRef]string operation, [ByRef]string source);
+
+    [Throws=QsError]
     string estimate([ByRef]string source, string? job_params);
 
     [Throws=QsError]

@@ -15,8 +15,19 @@ struct Row {
     is_classical: bool, 
 }
 
-pub fn quantikz(code: &str) -> Result<String, QsError> {
-    let sources = SourceMap::new([("test.qs".into(), code.into())], None);
+pub fn quantikz(source: &str) -> Result<String, QsError> {
+    generate_quantikz_circuit(source, CircuitEntryPoint::EntryPoint)
+}
+
+pub fn quantikz_operation(operation: &str, source: &str) -> Result<String, QsError> {
+    generate_quantikz_circuit(source, CircuitEntryPoint::Operation(operation.to_string()))
+}
+
+fn generate_quantikz_circuit(
+    source: &str,
+    entry_point: CircuitEntryPoint,
+) -> Result<String, QsError> {
+    let sources = SourceMap::new([("test.qs".into(), source.into())], None);
     let (std_id, store) = qsc::compile::package_store_with_stdlib(Profile::Unrestricted.into());
 
     let mut interpreter = match Interpreter::with_circuit_trace(
@@ -34,12 +45,11 @@ pub fn quantikz(code: &str) -> Result<String, QsError> {
         }
     };
 
-    let circuit = interpreter
-        .circuit(
-            CircuitEntryPoint::EntryPoint,
-            CircuitGenerationMethod::ClassicalEval,
-            TracerConfig::default(),
-        )?;
+    let circuit = interpreter.circuit(
+        entry_point,
+        CircuitGenerationMethod::ClassicalEval,
+        TracerConfig::default(),
+    )?;
 
     Ok(circuit_to_quantikz(&circuit))
 }
