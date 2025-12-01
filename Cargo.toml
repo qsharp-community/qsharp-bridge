@@ -9,12 +9,15 @@ edition = "2024"
 crate-type = ["lib", "cdylib", "staticlib"]
 
 [dependencies]
-qsc = { git = "https://github.com/microsoft/qdk.git", tag = "v1.22.0" }
-resource_estimator = { git = "https://github.com/microsoft/qdk.git", tag = "v1.22.0" }
+qsc = { git = "https://github.com/microsoft/qdk.git", branch = "main" }
+qsc_eval = { git = "https://github.com/microsoft/qdk.git", branch = "main" }
+qsc_circuit = { git = "https://github.com/microsoft/qdk.git", branch = "main" }
+resource_estimator = { git = "https://github.com/microsoft/qdk.git", branch = "main" }
 thiserror = "1.0"
 num-bigint = "0.4.5"
 num-complex = "0.4"
 uniffi = { version = "0.29.4", features=["build"] }
+expect-test = "1.4"
 
 [dev-dependencies]
 serde = { version = "1.0", features = ["derive"] }

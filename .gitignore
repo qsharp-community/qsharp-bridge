@@ -37,3 +37,6 @@ platforms/swift/Qsharp.Bridge/.swiftpm/xcode/xcuserdata/filipw.xcuserdatad/xcsch
 platforms/swift/Qsharp.Bridge/Sources/Qsharp.Bridge/qsharp_bridge.swift
 qsharp-bridge.sln
 platforms/python/qsharp-bridge/__pycache__/
+*.aux
+*.tex
+*.log
