@@ -2,7 +2,7 @@ use qsc::{
     LanguageFeatures, PackageType, SourceMap,
     interpret::{CircuitEntryPoint, CircuitGenerationMethod, Interpreter}, target::Profile,
 };
-use qsc_circuit::{Circuit, Operation, TracerConfig};
+use qsc_circuit::{Circuit, ComponentColumn, Operation, TracerConfig};
 use std::collections::HashMap;
 
 use crate::sim::QsError;
@@ -56,10 +56,20 @@ fn generate_quantikz_circuit(
 
 pub fn circuit_to_quantikz(c: &Circuit) -> String {
     let (mut rows, register_to_row) = build_rows(c);
-    let col_count = c.component_grid.len();
+
+    let grid = if c.component_grid.len() == 1
+        && c.component_grid[0].components.len() == 1
+        && !c.component_grid[0].components[0].children().is_empty()
+    {
+        c.component_grid[0].components[0].children()
+    } else {
+        &c.component_grid
+    };
+
+    let col_count = grid.len();
     let mut table = initialize_table(rows.len(), col_count, &rows);
 
-    populate_table(c, &register_to_row, &mut table, &mut rows);
+    populate_table(grid, &register_to_row, &mut table, &mut rows);
 
     render_latex(&rows, &table)
 }
@@ -103,12 +113,12 @@ fn initialize_table(row_count: usize, col_count: usize, rows: &[Row]) -> Vec<Vec
 }
 
 fn populate_table(
-    c: &Circuit,
+    grid: &[ComponentColumn],
     register_to_row: &RegisterMap,
     table: &mut [Vec<String>],
     rows: &mut [Row],
 ) {
-    for (col_index, col) in c.component_grid.iter().enumerate() {
+    for (col_index, col) in grid.iter().enumerate() {
         let table_col = col_index;
         for op in &col.components {
             // For measurements, we want to draw on the qubit line, so we treat qubits as targets for visual placement
