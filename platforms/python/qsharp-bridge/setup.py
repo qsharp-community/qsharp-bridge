@@ -14,7 +14,7 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 CARGO_MANIFEST_PATH = os.path.abspath(os.path.join(HERE, "../../../Cargo.toml"))
 CARGO_TARGET_DIR = os.path.abspath(os.path.join(HERE, "../../../target/release"))
 BINDINGS_SRC = os.path.abspath(os.path.join(HERE, "../../../bindings/qsharp_bridge.py"))
-VERSION = os.environ.get("PACKAGE_VERSION", "0.2.0")
+VERSION = os.environ.get("PACKAGE_VERSION", "0.2.1")
 
 def get_lib_filename():
     """
