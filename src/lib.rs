@@ -17,6 +17,7 @@ use crate::sim::run_qs;
 use crate::sim::run_qs_with_options;
 use crate::quantikz::quantikz;
 use crate::quantikz::quantikz_operation;
+use crate::quantikz::QuantikzGenerationOptions;
 
 pub mod noise;
 pub mod qasm;

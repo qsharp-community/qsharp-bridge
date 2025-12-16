@@ -16,10 +16,10 @@ namespace qsharp_bridge {
     string qasm2_expression([ByRef]string expression, QasmGenerationOptions generation_options);
 
     [Throws=QsError]
-    string quantikz([ByRef]string source);
+    string quantikz([ByRef]string source, QuantikzGenerationOptions options);
 
     [Throws=QsError]
-    string quantikz_operation([ByRef]string operation, [ByRef]string source);
+    string quantikz_operation([ByRef]string operation, [ByRef]string source, QuantikzGenerationOptions options);
 
     [Throws=QsError]
     string estimate([ByRef]string source, string? job_params);
@@ -31,6 +31,10 @@ namespace qsharp_bridge {
 dictionary QasmGenerationOptions {
     boolean include_qelib;
     QasmResetBehavior reset_behavior;
+};
+
+dictionary QuantikzGenerationOptions {
+    boolean group_by_scope;
 };
 
 enum QasmResetBehavior {

@@ -1,5 +1,5 @@
 use expect_test::expect;
-use qsharp_bridge::quantikz::{quantikz, quantikz_operation};
+use qsharp_bridge::quantikz::{quantikz, quantikz_operation, QuantikzGenerationOptions};
 
 #[test]
 fn quantikz_one_gate() {
@@ -13,7 +13,8 @@ fn quantikz_one_gate() {
                     M(q);
                 }
             }
-        "
+        ",
+        QuantikzGenerationOptions { group_by_scope: false }
     ).expect("quantikz generation should succeed");
 
     expect![[r#"
@@ -35,7 +36,7 @@ fn quantikz_operation_one_gate() {
             }
         }
     ";
-    let tex = quantikz_operation("Test.Main", source).expect("quantikz generation should succeed");
+    let tex = quantikz_operation("Test.Main", source, QuantikzGenerationOptions { group_by_scope: false }).expect("quantikz generation should succeed");
     expect![[r#"
         \begin{quantikz}
         \lstick{$\ket{0}_{0}$} & \gate{H} & \meter{} & \cw \\
@@ -55,7 +56,8 @@ fn quantikz_toffoli() {
                     CCNOT(q[0], q[1], q[2]);
                 }
             }
-        "
+        ",
+        QuantikzGenerationOptions { group_by_scope: false }
     ).expect("quantikz generation should succeed");
 
     expect![[r#"
@@ -80,7 +82,7 @@ fn quantikz_operation_toffoli() {
             }
         ";
 
-    let tex = quantikz_operation("Test.Main", source).expect("quantikz generation should succeed");
+    let tex = quantikz_operation("Test.Main", source, QuantikzGenerationOptions { group_by_scope: false }).expect("quantikz generation should succeed");
 
     expect![[r#"
         \begin{quantikz}
@@ -103,7 +105,8 @@ fn quantikz_swap_gate() {
                     SWAP(q[0], q[1]);
                 }
             }
-        "
+        ",
+        QuantikzGenerationOptions { group_by_scope: false }
     ).expect("quantikz generation should succeed");
 
     expect![[r#"
@@ -127,7 +130,7 @@ fn quantikz_operation_swap_gate() {
             }
         ";
 
-    let tex = quantikz_operation("Test.Main", source).expect("quantikz generation should succeed");
+    let tex = quantikz_operation("Test.Main", source, QuantikzGenerationOptions { group_by_scope: false }).expect("quantikz generation should succeed");
 
     expect![[r#"
         \begin{quantikz}
@@ -158,7 +161,8 @@ fn quantikz_complex_sample() {
                     let r2 = M(q2);
                 }
             }
-        "#
+        "#,
+        QuantikzGenerationOptions { group_by_scope: false }
     ).expect("quantikz generation should succeed");
 
     expect![[r#"
@@ -190,7 +194,7 @@ fn quantikz_operation_complex_sample() {
         }
     "#;
 
-    let tex = quantikz_operation("Test.Main", source).expect("quantikz generation should succeed");
+    let tex = quantikz_operation("Test.Main", source, QuantikzGenerationOptions { group_by_scope: false }).expect("quantikz generation should succeed");
 
     expect![[r#"
         \begin{quantikz}
@@ -221,7 +225,8 @@ fn quantikz_rotation_circuit() {
                     M(q1);
                 }
             }
-        "#
+        "#,
+        QuantikzGenerationOptions { group_by_scope: false }
     ).expect("quantikz generation should succeed");
 
     expect![[r#"
@@ -253,7 +258,7 @@ fn quantikz_operation_rotation_circuit() {
         }
     "#;
 
-    let tex = quantikz_operation("Test.Main", source).expect("quantikz generation should succeed");
+    let tex = quantikz_operation("Test.Main", source, QuantikzGenerationOptions { group_by_scope: false }).expect("quantikz generation should succeed");
 
     expect![[r#"
         \begin{quantikz}
@@ -286,7 +291,8 @@ fn quantikz_cat_state() {
                     MResetEachZ(qubits)
                 }
             }
-        "
+        ",
+        QuantikzGenerationOptions { group_by_scope: false }
     ).expect("quantikz generation should succeed");
 
     expect![[r#"
@@ -326,7 +332,7 @@ fn quantikz_operation_cat_state() {
         }
     ";
 
-    let tex = quantikz_operation("Test.Main", source).expect("quantikz generation should succeed");
+    let tex = quantikz_operation("Test.Main", source, QuantikzGenerationOptions { group_by_scope: false }).expect("quantikz generation should succeed");
 
     expect![[r#"
         \begin{quantikz}
@@ -341,4 +347,30 @@ fn quantikz_operation_cat_state() {
         \end{quantikz}
     "#]]
     .assert_eq(&tex);
+}
+#[test]
+fn quantikz_grouped_operation_should_unwrap_top_level() {
+    let source = r"
+        namespace Test {
+            operation PrepareBellState(q1 : Qubit, q2: Qubit) : Unit {
+                H(q1);
+                CNOT(q1, q2);
+            }
+
+            @EntryPoint()
+            operation Run() : Result {
+                use (q1, q2) = (Qubit(), Qubit());
+                PrepareBellState(q1, q2);
+                let r = M(q1);
+                Reset(q1);
+                Reset(q2);
+                return r;
+            }
+        }
+    ";
+
+    let tex = quantikz(source, QuantikzGenerationOptions { group_by_scope: true }).expect("quantikz generation should succeed");
+
+    assert!(tex.contains("PrepareBellState"), "Should contain inner operation name");
+    assert!(!tex.contains("\\gate[wires=2]{Run}"), "Should not contain top-level wrapper");
 }

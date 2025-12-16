@@ -2,10 +2,15 @@ use qsc::{
     LanguageFeatures, PackageType, SourceMap,
     interpret::{CircuitEntryPoint, CircuitGenerationMethod, Interpreter}, target::Profile,
 };
-use qsc_circuit::{Circuit, ComponentColumn, Operation, TracerConfig};
+use qsc_circuit::{Circuit, Operation, TracerConfig};
 use std::collections::HashMap;
 
 use crate::sim::QsError;
+
+#[derive(Clone, Copy, Debug, Default)]
+pub struct QuantikzGenerationOptions {
+    pub group_by_scope: bool,
+}
 
 type RegisterMap = HashMap<(usize, Option<usize>), usize>;
 
@@ -15,17 +20,18 @@ struct Row {
     is_classical: bool, 
 }
 
-pub fn quantikz(source: &str) -> Result<String, QsError> {
-    generate_quantikz_circuit(source, CircuitEntryPoint::EntryPoint)
+pub fn quantikz(source: &str, options: QuantikzGenerationOptions) -> Result<String, QsError> {
+    generate_quantikz_circuit(source, CircuitEntryPoint::EntryPoint, options)
 }
 
-pub fn quantikz_operation(operation: &str, source: &str) -> Result<String, QsError> {
-    generate_quantikz_circuit(source, CircuitEntryPoint::Operation(operation.to_string()))
+pub fn quantikz_operation(operation: &str, source: &str, options: QuantikzGenerationOptions) -> Result<String, QsError> {
+    generate_quantikz_circuit(source, CircuitEntryPoint::Operation(operation.to_string()), options)
 }
 
 fn generate_quantikz_circuit(
     source: &str,
     entry_point: CircuitEntryPoint,
+    options: QuantikzGenerationOptions,
 ) -> Result<String, QsError> {
     let sources = SourceMap::new([("test.qs".into(), source.into())], None);
     let (std_id, store) = qsc::compile::package_store_with_stdlib(Profile::Unrestricted.into());
@@ -48,7 +54,10 @@ fn generate_quantikz_circuit(
     let circuit = interpreter.circuit(
         entry_point,
         CircuitGenerationMethod::ClassicalEval,
-        TracerConfig::default(),
+        TracerConfig {
+            group_by_scope: options.group_by_scope,
+            ..Default::default()
+        },
     )?;
 
     Ok(circuit_to_quantikz(&circuit))
@@ -56,20 +65,29 @@ fn generate_quantikz_circuit(
 
 pub fn circuit_to_quantikz(c: &Circuit) -> String {
     let (mut rows, register_to_row) = build_rows(c);
+    let grid = &c.component_grid;
 
-    let grid = if c.component_grid.len() == 1
-        && c.component_grid[0].components.len() == 1
-        && !c.component_grid[0].components[0].children().is_empty()
-    {
-        c.component_grid[0].components[0].children()
+    // Check if we have a single top-level operation that wraps the entire circuit.
+    // If so, we unwrap it and use its children grid.
+    let maybe_children = if grid.len() == 1 && grid[0].components.len() == 1 {
+        match &grid[0].components[0] {
+            Operation::Unitary(u) => Some(&u.children),
+            Operation::Measurement(m) => Some(&m.children),
+            _ => None,
+        }
     } else {
-        &c.component_grid
+        None
     };
 
-    let col_count = grid.len();
+    let columns: Vec<Vec<&Operation>> = maybe_children
+        .filter(|children| !children.is_empty())
+        .map(|children| children.iter().map(|c| c.components.iter().collect()).collect())
+        .unwrap_or_else(|| grid.iter().map(|c| c.components.iter().collect()).collect());
+
+    let col_count = columns.len();
     let mut table = initialize_table(rows.len(), col_count, &rows);
 
-    populate_table(grid, &register_to_row, &mut table, &mut rows);
+    populate_table(&columns, &register_to_row, &mut table, &mut rows);
 
     render_latex(&rows, &table)
 }
@@ -113,14 +131,14 @@ fn initialize_table(row_count: usize, col_count: usize, rows: &[Row]) -> Vec<Vec
 }
 
 fn populate_table(
-    grid: &[ComponentColumn],
+    columns: &[Vec<&Operation>],
     register_to_row: &RegisterMap,
     table: &mut [Vec<String>],
     rows: &mut [Row],
 ) {
-    for (col_index, col) in grid.iter().enumerate() {
+    for (col_index, col) in columns.iter().enumerate() {
         let table_col = col_index;
-        for op in &col.components {
+        for op in col {
             // For measurements, we want to draw on the qubit line, so we treat qubits as targets for visual placement
             let targets = get_rows_for_operation(op, register_to_row, true); 
             let controls = get_rows_for_operation(op, register_to_row, false);
@@ -140,23 +158,31 @@ fn process_operation(
 ) {
     match op {
         Operation::Unitary(u) => {
-            process_unitary(
-                &u.gate,
-                &op.args(),
-                u.is_adjoint,
-                col,
-                targets,
-                controls,
-                table,
-            );
+            if !u.children.is_empty() {
+                 process_group(&u.gate, &u.args, col, targets, controls, table);
+            } else {
+                process_unitary(
+                    &u.gate,
+                    &op.args(),
+                    u.is_adjoint,
+                    col,
+                    targets,
+                    controls,
+                    table,
+                );
+            }
         }
-        Operation::Measurement(_) => {
-            for &t in targets {
-                table[t][col] = String::from("\\meter{}");
-                rows[t].is_classical = true;
-                // Switch the rest of the wire to classical
-                for next_c in (col + 1)..table[t].len() {
-                    table[t][next_c] = String::from("\\cw");
+        Operation::Measurement(m) => {
+             if !m.children.is_empty() {
+                 process_group(&m.gate, &m.args, col, targets, controls, table);
+            } else {
+                for &t in targets {
+                    table[t][col] = String::from("\\meter{}");
+                    rows[t].is_classical = true;
+                    // Switch the rest of the wire to classical
+                    for next_c in (col + 1)..table[t].len() {
+                        table[t][next_c] = String::from("\\cw");
+                    }
                 }
             }
         }
@@ -169,6 +195,30 @@ fn process_operation(
                     table[t][next_c] = String::from("\\qw");
                 }
             }
+        }
+    }
+}
+
+fn process_group(
+    name: &str,
+    args: &[String],
+    col: usize,
+    targets: &[usize],
+    controls: &[usize],
+    table: &mut [Vec<String>],
+) {
+    let simple_name = name.split('.').last().unwrap_or(name);
+    let label = operation_label(simple_name, args, false);
+
+    // Find the min and max row indices to span the box
+    if let (Some(&min_row), Some(&max_row)) = (targets.iter().min(), targets.iter().max()) {
+        let wires = max_row - min_row + 1;
+        table[min_row][col] = format!("\\gate[wires={}]{{{}}}", wires, label);
+
+        // Add controls
+        for &ctrl in controls {
+            let offset = min_row as isize - ctrl as isize;
+            table[ctrl][col] = format!("\\ctrl{{{}}}", offset);
         }
     }
 }
@@ -274,7 +324,7 @@ fn get_rows_for_operation(
             if is_target {
                 &m.qubits
             } else {
-                &m.qubits 
+                &vec![] 
             }
         }
         Operation::Unitary(u) => {
