@@ -1210,9 +1210,9 @@ dependencies = [
 
 [[package]]
 name = "owo-colors"
-version = "4.3.0"
+version = "4.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d211803b9b6b570f68772237e415a029d5a50c65d382910b879fb19d3271f94d"
+checksum = "9c6901729fa79e91a0913333229e9ca5dc725089d1c363b2f4b4760709dc4a52"
 
 [[package]]
 name = "parking_lot"
@@ -1708,11 +1708,12 @@ dependencies = [
 
 [[package]]
 name = "qsharp-bridge"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "num-bigint",
  "num-complex",
  "qsc",
+ "qsc_circuit",
  "resource_estimator",
  "serde",
  "serde_json",
