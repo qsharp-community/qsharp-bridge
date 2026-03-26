@@ -43,7 +43,12 @@ fn generate_quantikz_circuit(
         LanguageFeatures::default(),
         store,
         &[(std_id, None)],
-        Default::default(),
+        TracerConfig {
+            group_by_scope: true,
+            max_operations: TracerConfig::DEFAULT_MAX_OPERATIONS,
+            source_locations: true,
+            prune_classical_qubits: false,
+        },
     ) {
         Ok(interpreter) => interpreter,
         Err(errors) => {
@@ -56,7 +61,9 @@ fn generate_quantikz_circuit(
         CircuitGenerationMethod::ClassicalEval,
         TracerConfig {
             group_by_scope: options.group_by_scope,
-            ..Default::default()
+            max_operations: TracerConfig::DEFAULT_MAX_OPERATIONS,
+            source_locations: true,
+            prune_classical_qubits: false,
         },
     )?;
 
