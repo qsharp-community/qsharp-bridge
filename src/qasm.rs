@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use num_bigint::BigUint;
 use num_complex::Complex;
-use qsc::{interpret::{GenericReceiver, Value}, Backend, PackageType, TargetCapabilityFlags};
+use qsc::{interpret::{GenericReceiver, Value}, Backend, BackendResult, PackageType, TargetCapabilityFlags};
 
 use crate::sim::{create_interpreter, QsError};
 
@@ -85,8 +85,6 @@ impl Qasm2Backend {
 }
 
 impl Backend for Qasm2Backend {
-    type ResultType = bool;
-
     fn qubit_allocate(&mut self) -> usize {
         let q = self.next_qubit_id;
         self.next_qubit_id += 1;
@@ -160,31 +158,31 @@ impl Backend for Qasm2Backend {
             .push(format!("ccx q[{}], q[{}], q[{}];", ctl0, ctl1, q));
     }
 
-    fn m(&mut self, q: usize) -> Self::ResultType {
+    fn m(&mut self, q: usize) -> BackendResult {
         let c = self.cbit_counter;
         self.cbit_counter += 1;
         self.code.push(format!("measure q[{}] -> c[{}];", q, c));
-        false
+        BackendResult::Val(false)
     }
 
-    fn mresetz(&mut self, q: usize) -> Self::ResultType {
+    fn mresetz(&mut self, q: usize) -> BackendResult {
         match self.generation_options.reset_behavior {
             QasmResetBehavior::Supported => {
                 let c = self.cbit_counter;
                 self.cbit_counter += 1;
                 self.code.push(format!("measure q[{}] -> c[{}];", q, c));
                 self.code.push(format!("reset q[{}];", q));
-                false
+                BackendResult::Val(false)
             }
             QasmResetBehavior::Ignored => {
                 let c = self.cbit_counter;
                 self.cbit_counter += 1;
                 self.code.push(format!("measure q[{}] -> c[{}];", q, c));
-                false
+                BackendResult::Val(false)
             }
             QasmResetBehavior::Error => {
                 self.errors.push("Reset is not supported".to_string());
-                false
+                BackendResult::Val(false)
             }
         }
     }
